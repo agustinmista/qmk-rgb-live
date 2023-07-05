@@ -1,15 +1,15 @@
+<script setup lang="ts">
+import CardItem from '../components/CardItem.vue';
+</script>
+
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <CardItem>
+    <template #header>About this page</template>
+
+    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam quae nam
+    quas itaque ullam facere delectus aut ducimus aliquam. Facilis quam aliquam
+    nostrum consequatur necessitatibus a, maiores quo ut sed?
+  </CardItem>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style>
+<style scoped></style>
