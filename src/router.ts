@@ -12,6 +12,11 @@ export const router = createRouter({
       path: '/about',
       name: 'about',
       component: () => import('./views/AboutView.vue') // Lazy loaded
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: () => import('./views/TestView.vue') // Lazy loaded
     }
   ]
 })
