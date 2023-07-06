@@ -8,14 +8,16 @@ defineProps<{
   selected: boolean
 }>()
 
-defineEmits(['key-select', 'key-unselect'])
+defineEmits([
+  'key-toggle'
+])
 </script>
 
 <template>
   <div
     :class="'key' + (selected ? ' selected' : '')"
     :style="{ left: x+'%', marginTop: y+'%', width: w+'%', paddingBottom: h+'%' }"
-    @click="$emit('key-' + (selected ? 'unselect' : 'select'), matrix)"
+    @click="$emit('key-toggle')"
   >
   </div>
 </template>
@@ -25,7 +27,7 @@ defineEmits(['key-select', 'key-unselect'])
   position: absolute;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  border-radius: 10%;
+  border-radius: 15%;
   background-color: var(--secondary);
 }
 
@@ -34,8 +36,9 @@ defineEmits(['key-select', 'key-unselect'])
 }
 
 .key.selected {
-  border-style: solid;
-  border-width: 2px;
-  border-color: red;
+  outline-style: solid;
+  outline-offset: -4px;
+  outline-width: 2px;
+  outline-color: red;
 }
 </style>

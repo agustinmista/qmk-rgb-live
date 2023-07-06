@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <footer>
     <small>
@@ -8,5 +5,3 @@
     </small>
   </footer>
 </template>
-
-<style scoped></style>

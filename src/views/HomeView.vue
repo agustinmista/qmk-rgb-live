@@ -7,5 +7,3 @@ import CardItem from '@/components/CardItem.vue'
     Welcome there!
   </CardItem>
 </template>
-
-<style scoped></style>

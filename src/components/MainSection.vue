@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import FooterMenu from '@/components/FooterMenu.vue'
+import FooterSection from './FooterSection.vue'
 </script>
 
 <template>
@@ -9,7 +9,7 @@ import FooterMenu from '@/components/FooterMenu.vue'
     <RouterView />
 
     <!-- Footer -->
-    <FooterMenu />
+    <FooterSection />
   </main>
 </template>
 

@@ -13,5 +13,3 @@ defineProps<{
     </RouterLink>
   </li>
 </template>
-
-<style scoped></style>

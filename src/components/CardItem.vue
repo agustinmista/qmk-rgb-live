@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <article>
     <!-- Optional header -->
@@ -21,5 +18,3 @@
     </template>
   </article>
 </template>
-
-<style scoped></style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavMenu from './components/NavMenu.vue'
 import NavLink from './components/NavLink.vue'
-import MainContent from './components/MainContent.vue'
+import MainSection from './components/MainSection.vue'
 import logo from './assets/img/logo.svg'
 </script>
 
@@ -13,7 +13,7 @@ import logo from './assets/img/logo.svg'
   </NavMenu>
 
   <!-- Main content -->
-  <MainContent />
+  <MainSection />
 </template>
 
 <style scoped></style>

@@ -11,5 +11,3 @@ import CardItem from '@/components/CardItem.vue'
     nostrum consequatur necessitatibus a, maiores quo ut sed?
   </CardItem>
 </template>
-
-<style scoped></style>
