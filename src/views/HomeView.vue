@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import CardItem from '@/components/CardItem.vue'
+import CardContainer from '@/components/Container/CardContainer.vue'
 </script>
 
 <template>
-  <CardItem>
+  <CardContainer>
     Welcome there!
-  </CardItem>
+  </CardContainer>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watch } from 'vue';
-import SingleKey from '@/components/SingleKey.vue';
+import KeyItem from '@/components/Keyboard/KeyItem.vue';
 
 const props = defineProps<{
   keys: Array<Key>,
@@ -8,7 +8,10 @@ const props = defineProps<{
 }>()
 
 defineEmits([
-  'key-area-toggle'
+  'key-area-toggle',
+  'key-area-select-all',
+  'key-area-invert-all',
+  'key-area-clear-all'
 ])
 
 // Layout properties
@@ -19,7 +22,7 @@ let scale: number = 1      // The scaling factor
 
 // Compute the layout properties based on `keys`
 function computeLayoutDimensions(keys: Array<Key>) {
-  width = Math.max(...keys.map(key => key.x + key.w + extra))
+  width  = Math.max(...keys.map(key => key.x + key.w + extra))
   height = Math.max(...keys.map(key => key.y + key.h + extra))
   scale = 100 / width
 }
@@ -28,8 +31,7 @@ function computeLayoutDimensions(keys: Array<Key>) {
 watch(() => props.keys, computeLayoutDimensions, { immediate: true })
 
 // Some shorthands to simplify template
-function layoutW() { return 100 }
-function layoutH() { return scale * height }
+function layoutStyle() { return { width: '100%', paddingBottom: (scale * height) +'%' } }
 function keyX(key: Key) { return scale * (key.x + extra) }
 function keyY(key: Key) { return scale * (key.y + extra) }
 function keyW(key: Key) { return scale * (key.w - extra) }
@@ -37,10 +39,10 @@ function keyH(key: Key) { return scale * (key.h - extra) }
 </script>
 
 <template>
-  <!-- Key keys area -->
-  <div class="keyarea" :style="{ width: layoutW()+'%', paddingBottom: layoutH()+'%' }">
+  <!-- Keys area -->
+  <div class="keyarea" :style="layoutStyle()">
     <template v-for="key in keys" :key="key.matrix">
-      <SingleKey
+      <KeyItem
         :matrix="key.index"
         :x="keyX(key)"
         :y="keyY(key)"
@@ -50,6 +52,14 @@ function keyH(key: Key) { return scale * (key.h - extra) }
         @key-toggle="$emit('key-area-toggle', key.index)"
       />
     </template>
+  </div>
+  <!-- Selection area -->
+  <div class="grid">
+    <div class="grid">
+      <button @click="$emit('key-area-select-all')">Select all</button>
+      <button @click="$emit('key-area-invert-all')">Invert all</button>
+      <button @click="$emit('key-area-clear-all')">Clear all</button>
+    </div>
   </div>
 </template>
 

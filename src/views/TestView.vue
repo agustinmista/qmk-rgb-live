@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import CardItem from '@/components/CardItem.vue'
-import DeviceSelector from '@/components/DeviceSelector.vue'
-import KeyboardSelector from '@/components/KeyboardSelector.vue'
-import KeyboardController from '@/components/KeyboardController.vue'
+import CardContainer from '@/components/Container/CardContainer.vue'
+import DeviceSelector from '@/components/Keyboard/DeviceSelector.vue'
+import KeyboardSelector from '@/components/Keyboard/KeyboardSelector.vue'
+import KeyboardController from '@/components/Keyboard/KeyboardController.vue'
 
 import keyboardLoader from '@/utils/keyboardLoader'
 
@@ -81,7 +81,7 @@ function setSelectedKeyboard(id: KeyboardId) {
 </script>
 
 <template>
-  <CardItem>
+  <CardContainer>
     <DeviceSelector
       :devices="devices"
       :connected="connected"
@@ -98,5 +98,5 @@ function setSelectedKeyboard(id: KeyboardId) {
     <KeyboardController v-if="selected && connected"
       :keyboard="keyboards[selected]"
     />
-  </CardItem>
+  </CardContainer>
 </template>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import KeyAreaLayout from '@/components/KeyAreaLayout.vue'
-import KeyAreaControls from '@/components/KeyAreaControls.vue'
+import KeyArea from '@/components/Keyboard/KeyArea.vue'
 
 const props = defineProps<{
   keyboard: Keyboard
@@ -34,17 +33,17 @@ function clearAll() {
 </script>
 
 <template>
+  <!--
   <h5>{{ keyboard.name }}</h5>
   <span>Manufacturer: {{ keyboard.manufacturer }}</span><br />
   <span>Website: <a :href="keyboard.url">{{ keyboard.url }}</a></span><br />
   <span v-if="keyboard.variant">Variant: {{ keyboard.variant }}</span><br />
+  -->
   <br />
-  <KeyAreaLayout
+  <KeyArea
     :keys="keyboard.layout"
     :selected="selected"
     @key-area-toggle="toggle"
-  />
-  <KeyAreaControls
     @key-controls-select-all="selectAll"
     @key-controls-invert-all="invertAll"
     @key-controls-clear-all="clearAll"

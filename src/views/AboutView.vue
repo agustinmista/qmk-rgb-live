@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import CardItem from '@/components/CardItem.vue'
+import CardContainer from '@/components/Container/CardContainer.vue'
 </script>
 
 <template>
-  <CardItem>
+  <CardContainer>
     <template #header>About this page</template>
 
     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam quae nam
     quas itaque ullam facere delectus aut ducimus aliquam. Facilis quam aliquam
     nostrum consequatur necessitatibus a, maiores quo ut sed?
-  </CardItem>
+  </CardContainer>
 </template>
