@@ -7,7 +7,7 @@ import logo from '@/assets/img/logo.svg'
 
 <template>
   <!-- Nav -->
-  <NavMenu name="QMK live RGB configurator" :logo="logo">
+  <NavMenu name="QMK RGB live configurator" :logo="logo">
     <NavLink to="/">Home</NavLink>
     <NavLink to="/about">About</NavLink>
   </NavMenu>
