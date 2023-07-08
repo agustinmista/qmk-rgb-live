@@ -1,0 +1,18 @@
+name: Build and deploy
+
+on: [push]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    name: Build Vue
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - uses: xRealNeon/VuePagesAction@1.0.1
+      with:
+        username: 'agustinmista'
+        reponame: 'qmk-rgb-live'
+        token: ${{ secrets.GITHUB_TOKEN }}
