@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { type Ref, ref } from 'vue'
 import CardContainer from '@/components/Container/CardContainer.vue'
 
 const props = defineProps<{
-  name: string
-  devices: Array<HIDDevice>
-  keyboards: Record<KeyboardId, Keyboard>
+  deviceName: string
+  deviceInterfaces: Array<HIDDevice>
+  keyboardVariants: Array<Keyboard>
 }>()
 
 const emit = defineEmits([
@@ -12,11 +13,14 @@ const emit = defineEmits([
   'keyboard-selector-item-forget'
 ])
 
-// The selected device
-var selectedDevice: number
+// The selected device interface
+let selectedInterface: Ref<number | null> = ref(null);
 
-// The selected keyboard
-var selectedKeyboard: KeyboardId
+function renderDeviceOption(index: number) {
+  const device = props.deviceInterfaces[index]
+  const [usage, usagePage] = deviceUSBParams(device)
+  return `#${index} (usage: ${usage}, usagePage: ${usagePage})`
+}
 
 function deviceUSBParams(device: HIDDevice) {
   return [
@@ -25,50 +29,61 @@ function deviceUSBParams(device: HIDDevice) {
   ]
 }
 
-function renderDeviceOption(device: HIDDevice) {
-  const [usage, usagePage] = deviceUSBParams(device)
-  return `${device.productName} (usage: ${usage}, usagePage: ${usagePage})`
+// The selected keyboard
+var selectedVariant: Ref<number | null> = ref(null);
+
+function renderVariantOption(index: number) {
+  const variant = props.keyboardVariants[index]
+  return (variant.variant ? `${variant.variant}` : ' default')
 }
 
-function renderKeyboardOption(keyboard: Keyboard) {
-  return keyboard.name + (keyboard.variant ? ` (variant ${keyboard.variant})` : ' (single variant)')
-}
 
 function connect() {
-  emit('keyboard-selector-item-connect', props.devices[selectedDevice], props.keyboards[selectedKeyboard])
+  if (selectedInterface.value !== null && selectedVariant.value !== null) {
+    emit(
+      'keyboard-selector-item-connect',
+      props.deviceInterfaces[selectedInterface.value],
+      props.keyboardVariants[selectedVariant.value]
+    )
+  }
 }
 
 function forget() {
-  emit('keyboard-selector-item-forget', props.devices[selectedDevice])
+  if (selectedInterface.value !== null) {
+    emit(
+      'keyboard-selector-item-forget',
+      props.deviceInterfaces[selectedInterface.value]
+    )
+  }
 }
 </script>
 
 <template>
   <CardContainer>
-    <h4>{{ name }}</h4>
+    <h4>{{ deviceName }}</h4>
 
     <div class="grid">
-      <!-- Interface -->
+      <!-- Keyboard -->
       <div>
-        <label for="keyboard-selector">
-          <strong>Device interface</strong>
+        <label for="variant-selector">
+          <strong>Keyboard variant</strong>
         </label>
-        <select id="keyboard-selector" v-model="selectedDevice">
+        <select id="variant-selector" v-model="selectedVariant">
           <option disabled selected value>Select an option</option>
-          <template v-for="(device, index) of devices" :key="deviceUSBParams(device)">
-            <option :value="index">{{ renderDeviceOption(device) }}</option>
+          <template v-for="(keyboardVariant, index) in keyboardVariants" :key="keyboardVariant.id">
+            <option :value="index">{{ renderVariantOption(index) }}</option>
           </template>
         </select>
       </div>
-      <!-- Keyboard -->
+      <!-- Interface -->
       <div>
-        <label for="keyboard-selector">
-          <strong>Keyboard variant</strong>
+        <label for="interface-selector">
+          <strong>Device interface</strong>
         </label>
-        <select id="keyboard-selector" v-model="selectedKeyboard">
+        <select id="interface-selector" v-model="selectedInterface">
           <option disabled selected value>Select an option</option>
-          <template v-for="keyboard in keyboards" :key="keyboard.id">
-            <option :value="keyboard.id">{{ renderKeyboardOption(keyboard) }}</option>
+          <template v-for="(deviceInterface, index) of deviceInterfaces" :key="deviceUSBParams(deviceInterface)">
+            <option :value="index">{{ renderDeviceOption(index) }}</option>
           </template>
         </select>
       </div>
@@ -76,8 +91,8 @@ function forget() {
     <br />
     <!-- Buttons -->
     <div class="grid">
-      <button @click="connect">Connect</button>
-      <button @click="forget">Forget</button>
+      <button @click="connect" :disabled="selectedInterface === null || selectedVariant === null">Connect</button>
+      <button @click="forget" :disabled="selectedInterface === null">Forget</button>
     </div>
   </CardContainer>
 </template>

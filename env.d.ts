@@ -17,12 +17,20 @@ interface Key {
 type KeyboardId = string
 type Layout = Array<Key>
 
+interface KeyboardUSBParams {
+  vendorId?: number,
+  productId?: number,
+  usage?: number,
+  usagePage?: number
+}
+
 interface Keyboard {
   id: KeyboardId
   name: string
   variant?: string
   manufacturer: string
   url: string
+  usb: KeyboardUSBParams
   layout: Layout
 }
 

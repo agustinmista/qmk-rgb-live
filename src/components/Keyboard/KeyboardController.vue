@@ -87,19 +87,21 @@ async function sendMessage(data: Array<number>) {
 </script>
 
 <template>
-  <h3>Connected to {{ device.productName }}</h3>
-  <KeyArea
-    :keys="keyboard.layout"
-    :selected="selectedKeys"
-    :colors="colorMap"
-    @key-area-toggle="toggle"
-    @key-area-select-all="selectAll"
-    @key-area-invert-all="invertAll"
-    @key-area-clear-all="clearAll"
-  />
-  <ColorPicker
-    @color-picker-chosen="colorChosen"
-  />
-  <br />
-  <button @click="disconnect">Disconnect</button>
+  <div class="keyboard-controller">
+    <h3>Connected to {{ device.productName }}</h3>
+    <br />
+    <button @click="disconnect">Disconnect</button>
+    <KeyArea
+      :keys="keyboard.layout"
+      :selected="selectedKeys"
+      :colors="colorMap"
+      @key-area-toggle="toggle"
+      @key-area-select-all="selectAll"
+      @key-area-invert-all="invertAll"
+      @key-area-clear-all="clearAll"
+    />
+    <ColorPicker
+      @color-picker-chosen="colorChosen"
+    />
+  </div>
 </template>

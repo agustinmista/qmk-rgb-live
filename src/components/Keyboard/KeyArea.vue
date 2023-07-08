@@ -51,27 +51,29 @@ function keyColor(key: Key) {
 </script>
 
 <template>
-  <!-- Keys area -->
-  <div class="keyarea" :style="layoutStyle()">
-    <template v-for="key in keys" :key="key.matrix">
-      <KeyItem
-        :index="key.index"
-        :color="keyColor(key)"
-        :x="keyX(key)" :y="keyY(key)" :w="keyW(key)" :h="keyH(key)"
-        :selected="selected.has(key.index)" @key-toggle="$emit('key-area-toggle', key.index)"
-      />
-    </template>
-  </div>
-  <!-- Selection area -->
-  <div class="grid">
-    <button @click="$emit('key-area-select-all')">Select all</button>
-    <button @click="$emit('key-area-invert-all')">Invert all</button>
-    <button @click="$emit('key-area-clear-all')">Clear all</button>
+  <div class="keyarea">
+    <!-- Keys area -->
+    <div class="keycanvas" :style="layoutStyle()">
+      <template v-for="key in keys" :key="key.matrix">
+        <KeyItem
+          :index="key.index"
+          :color="keyColor(key)"
+          :x="keyX(key)" :y="keyY(key)" :w="keyW(key)" :h="keyH(key)"
+          :selected="selected.has(key.index)" @key-toggle="$emit('key-area-toggle', key.index)"
+        />
+      </template>
+    </div>
+    <!-- Selection area -->
+    <div class="grid">
+      <button @click="$emit('key-area-select-all')">Select all</button>
+      <button @click="$emit('key-area-invert-all')">Invert all</button>
+      <button @click="$emit('key-area-clear-all')">Clear all</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.keyarea {
+.keycanvas {
   position: relative;
   margin-bottom: calc(var(--block-spacing-vertical) / 3);
   border-style: solid;
