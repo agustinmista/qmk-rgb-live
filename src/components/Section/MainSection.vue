@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import FooterSection from './FooterSection.vue'
 </script>
 
 <template>
   <main class="container">
-    <!-- View content -->
-    <RouterView />
-
-    <!-- Footer -->
-    <FooterSection />
+    <RouterView v-slot="{ Component }">
+      <Transition mode="out-in">
+        <Component :is="Component" />
+      </transition>
+    </RouterView>
   </main>
 </template>
 

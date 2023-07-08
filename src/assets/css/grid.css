@@ -1,0 +1,33 @@
+/* Basic 5/1/1/1 grid with space for 3 buttons to the right */
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  grid-column-gap: 1em;
+  grid-row-gap: 0px;
+  align-items: center;
+}
+
+.button-grid-header {
+  grid-area: 1 / 1 / 2 / 6;
+}
+
+.button-grid-b1 {
+  grid-area: 1 / 6 / 2 / 7;
+}
+
+.button-grid-b2 {
+  grid-area: 1 / 7 / 2 / 8;
+}
+
+.button-grid-b3 {
+  grid-area: 1 / 8 / 2 / 9;
+}
+
+.button-grid-header>*,
+.button-grid-b1>*,
+.button-grid-b2>*,
+.button-grid-b3>* {
+  margin-bottom: 0;
+}

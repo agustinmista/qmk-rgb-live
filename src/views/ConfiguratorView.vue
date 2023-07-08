@@ -32,14 +32,16 @@ async function disconnectDevice() {
 
 <template>
   <div class="configurator-view">
-    <KeyboardSelector v-if="!connected"
-      :connected="connected"
-      @keyboard-selector-connect="connectDevice"
-    />
-    <KeyboardController v-if="selectedDevice && selectedKeyboard && connected"
-      :device="selectedDevice"
-      :keyboard="selectedKeyboard"
-      @keyboard-controller-disconnect="disconnectDevice"
-    />
+    <Transition mode="out-in">
+      <KeyboardSelector v-if="!connected"
+        :connected="connected"
+        @keyboard-selector-connect="connectDevice"
+      />
+      <KeyboardController v-else
+        :device="selectedDevice!"
+        :keyboard="selectedKeyboard!"
+        @keyboard-controller-disconnect="disconnectDevice"
+      />
+    </Transition>
   </div>
 </template>

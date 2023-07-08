@@ -7,7 +7,7 @@
     "vendorId": "0x3297",
     "productId": "0x1969",
     "usage": "0x61",
-    "usagePage": "0xFF5D"
+    "usagePage": "0xFF60"
   },
   "layout": [
     {"index": [0, 0], "x": 0, "y": 0.375},

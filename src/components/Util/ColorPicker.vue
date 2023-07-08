@@ -44,6 +44,7 @@ function colorOptionStyle(color: string) {
 .color-palette {
   display: flex;
   justify-content: space-evenly;
+  padding: 1em;
 }
 
 .color-option:hover {

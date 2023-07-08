@@ -1,41 +1,44 @@
-@import '@picocss/pico/css/pico.min.css';
+@import './theme.css';
+@import './grid.css';
 
-/* Teal Light scheme (Default) */
-/* Can be forced with data-theme="light" */
-[data-theme="light"],
-:root:not([data-theme="dark"]) {
-  --primary: #00897b;
-  --primary-hover: #00796b;
-  --primary-focus: rgba(0, 137, 123, 0.125);
-  --primary-inverse: #FFF;
-}
-
-/* Teal Dark scheme (Auto) */
-/* Automatically enabled if user has Dark mode enabled */
-@media only screen and (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --primary: #00897b;
-    --primary-hover: #009688;
-    --primary-focus: rgba(0, 137, 123, 0.25);
-    --primary-inverse: #FFF;
-  }
-}
-
-/* Teal Dark scheme (Forced) */
-/* Enabled if forced with data-theme="dark" */
-[data-theme="dark"] {
-  --primary: #00897b;
-  --primary-hover: #009688;
-  --primary-focus: rgba(0, 137, 123, 0.25);
-  --primary-inverse: #FFF;
-}
-
-/* Teal (Common styles) */
 :root {
-  --form-element-active-border-color: var(--primary);
-  --form-element-focus-color: var(--primary-focus);
-  --switch-color: var(--primary-inverse);
-  --switch-checked-background-color: var(--primary);
   /* Reduce the gigantic margins everywhere */
-  --spacing: 0.5rem;
+  --spacing: 0.3rem;
+  --font-family: 'Trebuchet MS', sans-serif;
+}
+
+/* Restore some of the lost padding */
+nav>ul,
+article>header,
+article>* {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+/* Add some padding to grids */
+.grid,
+.button-grid {
+  padding: 1em;
+}
+
+/* Red and green accents */
+.red {
+  background-color: darkred;
+  border-color: darkred;
+}
+
+.green {
+  background-color: darkgreen;
+  border-color: darkgreen;
+}
+
+/* Component transitions */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }

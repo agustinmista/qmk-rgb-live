@@ -62,4 +62,8 @@ function keyTitle() {
   outline-width: 2px;
   outline-color: red;
 }
+
+.key:hover{
+  transform: scale(1.1);
+}
 </style>

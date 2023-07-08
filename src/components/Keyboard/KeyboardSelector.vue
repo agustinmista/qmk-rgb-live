@@ -4,6 +4,8 @@ import { loadKeyboards } from '@/util/keyboardLoader'
 import { groupBy } from '@/util/groupBy'
 import KeyboardSelectorItem from '@/components/Keyboard/KeyboardSelectorItem.vue'
 import CardContainer from '@/components/Container/CardContainer.vue'
+import PlusIcon from '@/components/Icon/PlusIcon.vue'
+import PlusIconSmall from '@/components/Icon/PlusIconSmall.vue'
 
 defineProps<{
   connected: boolean
@@ -42,13 +44,11 @@ function matchingDevicesAndKeyboards() {
   let productName = (device: HIDDevice) => device.productName
   groupBy(devices.value, productName).forEach((deviceInterfaces, deviceName) => {
     let matchingKeyboards = Object.values(keyboards).filter(keyboard => keyboard.name === deviceName)
-    if (matchingKeyboards.length > 0) {
-      groups.push({
-        name: deviceName,
-        interfaces: deviceInterfaces,
-        variants: matchingKeyboards
-      })
-    }
+    groups.push({
+      name: deviceName,
+      interfaces: deviceInterfaces,
+      variants: matchingKeyboards
+    })
   })
   return groups
 }
@@ -74,12 +74,21 @@ async function forgetDevice(device: HIDDevice) {
 
 <template>
   <div class="keyboard-selector">
-    <h3>Paired devices</h3>
+
+    <!-- Header -->
+    <div class="button-grid">
+      <div class="button-grid-header">
+        <h3>Paired devices</h3>
+      </div>
+      <div class="button-grid-b3">
+        <button class="green" @click="pairDevice"><PlusIcon /></button>
+      </div>
+    </div>
 
     <!-- No paired devices -->
     <template v-if="!connected && devices.length === 0">
       <CardContainer>
-        <span>It is lonely here! Try pressing the button below</span>
+        <span>It's lonely in here! Try pressing the <PlusIconSmall /> button.</span>
       </CardContainer>
     </template>
 
@@ -95,10 +104,11 @@ async function forgetDevice(device: HIDDevice) {
         />
       </template>
     </template>
-
-    <!-- Pair button -->
-    <template v-if="!connected">
-      <button @click="pairDevice">Pair new</button>
-    </template>
   </div>
 </template>
+
+<style scoped>
+span {
+  padding-left: 1em
+}
+</style>
