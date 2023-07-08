@@ -36,4 +36,6 @@
   --form-element-focus-color: var(--primary-focus);
   --switch-color: var(--primary-inverse);
   --switch-checked-background-color: var(--primary);
+  /* Reduce the gigantic margins everywhere */
+  --spacing: 0.5rem;
 }

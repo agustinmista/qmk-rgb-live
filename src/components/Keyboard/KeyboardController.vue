@@ -1,23 +1,36 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import KeyArea from '@/components/Keyboard/KeyArea.vue'
+import ColorPicker from '@/components/Util/ColorPicker.vue'
 
 const props = defineProps<{
+  device: HIDDevice
   keyboard: Keyboard
 }>()
 
-// Handle selected keys
-const selected: Set<Index> = reactive(new Set ())
+const emit = defineEmits([
+  'keyboard-controller-disconnect'
+])
+
+// Disconnect
+
+function disconnect() {
+  emit('keyboard-controller-disconnect')
+}
+
+// Selected keys
+
+const selectedKeys: Set<Index> = reactive(new Set())
 
 function toggle(index: Index) {
-  if (!selected.delete(index)) {
-    selected.add(index)
+  if (!selectedKeys.delete(index)) {
+    selectedKeys.add(index)
   }
 }
 
 function selectAll() {
   props.keyboard.layout.forEach(key => {
-    selected.add(key.index)
+    selectedKeys.add(key.index)
   });
 }
 
@@ -28,24 +41,65 @@ function invertAll() {
 }
 
 function clearAll() {
-  selected.clear()
+  selectedKeys.clear()
+}
+
+// Selected colors
+
+const colorMap: Map<Index, string> = reactive(new Map())
+
+function colorChosen(color: string) {
+  const rgb = hexToRGB(color)
+  console.log('Chosen color', rgb)
+
+  selectedKeys.forEach(index => {
+    // UI
+    colorMap.set(index, color)
+    // Keyboard
+    let data = new Array(32).fill(0);
+    data.splice(0, 5, rgb?.r, rgb?.g, rgb?.b, index[0], index[1])
+    sendMessage(data)
+  })
+}
+
+function hexToRGB(hex: string) {
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!result) {
+    return null
+  } else {
+    return {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    }
+  }
+}
+
+// WebHID stuff
+
+async function sendMessage(data: Array<number>) {
+  if (props.device && props.device.opened) {
+    console.log('Sending data:')
+    console.log(data)
+    await props.device.sendReport(0x0, new Uint8Array(data))
+  }
 }
 </script>
 
 <template>
-  <!--
-  <h5>{{ keyboard.name }}</h5>
-  <span>Manufacturer: {{ keyboard.manufacturer }}</span><br />
-  <span>Website: <a :href="keyboard.url">{{ keyboard.url }}</a></span><br />
-  <span v-if="keyboard.variant">Variant: {{ keyboard.variant }}</span><br />
-  -->
-  <br />
+  <h3>Connected to {{ device.productName }}</h3>
   <KeyArea
     :keys="keyboard.layout"
-    :selected="selected"
+    :selected="selectedKeys"
+    :colors="colorMap"
     @key-area-toggle="toggle"
-    @key-controls-select-all="selectAll"
-    @key-controls-invert-all="invertAll"
-    @key-controls-clear-all="clearAll"
+    @key-area-select-all="selectAll"
+    @key-area-invert-all="invertAll"
+    @key-area-clear-all="clearAll"
   />
+  <ColorPicker
+    @color-picker-chosen="colorChosen"
+  />
+  <br />
+  <button @click="disconnect">Disconnect</button>
 </template>

@@ -1,4 +1,4 @@
-export default function (): Record<KeyboardId, Keyboard> {
+export function loadKeyboards(): Record<KeyboardId, Keyboard> {
   // Read the JSON keyboard definitions
   const jsons = import.meta.glob('@/assets/kbd/*.json', { eager: true }) as Record<KeyboardId, Keyboard>
   // Traverse the JSONs and collect the keyboards into a record

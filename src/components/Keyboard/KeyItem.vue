@@ -1,22 +1,43 @@
 <script setup lang="ts">
-defineProps<{
-  matrix: Array<number>,
+const props = defineProps<{
+  index: Array<number>,
   x: number,
   y: number,
   w: number
   h: number,
   selected: boolean
+  color: string | null
 }>()
 
 defineEmits([
   'key-toggle'
 ])
+
+function keyClasses() {
+  return 'key' + (props.selected ? ' selected' : '')
+}
+
+function keyStyle() {
+  return {
+    left: props.x+'%',
+    marginTop: props.y+'%',
+    width: props.w+'%',
+    paddingBottom: props.h+'%',
+    backgroundColor: props.color ? props.color : 'var(--secondary)'
+  }
+}
+
+function keyTitle() {
+  return `(${props.index})`
+}
+
 </script>
 
 <template>
   <div
-    :class="'key' + (selected ? ' selected' : '')"
-    :style="{ left: x+'%', marginTop: y+'%', width: w+'%', paddingBottom: h+'%' }"
+    :class="keyClasses()"
+    :style="keyStyle()"
+    :title="keyTitle()"
     @click="$emit('key-toggle')"
   >
   </div>
@@ -27,8 +48,8 @@ defineEmits([
   position: absolute;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  border-radius: 15%;
-  background-color: var(--secondary);
+  border-radius: 10%;
+  cursor: pointer;
 }
 
 .key:hover {

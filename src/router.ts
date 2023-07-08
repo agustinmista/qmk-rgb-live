@@ -14,9 +14,9 @@ export const router = createRouter({
       component: () => import('@/views/AboutView.vue') // Lazy loaded
     },
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('@/views/TestView.vue') // Lazy loaded
+      path: '/config',
+      name: 'config',
+      component: () => import('@/views/ConfiguratorView.vue') // Lazy loaded
     }
   ]
 })

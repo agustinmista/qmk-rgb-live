@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavMenu from './components/NavMenu.vue'
-import NavLink from './components/NavLink.vue'
-import MainSection from './components/MainSection.vue'
+import NavMenu from './components/Nav/NavMenu.vue'
+import NavLink from './components/Nav/NavLink.vue'
+import MainSection from './components/Section/MainSection.vue'
 import logo from './assets/img/logo.svg'
 </script>
 
