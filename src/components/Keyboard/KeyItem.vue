@@ -30,7 +30,6 @@ function keyStyle() {
 function keyTitle() {
   return `(${props.index})`
 }
-
 </script>
 
 <template>

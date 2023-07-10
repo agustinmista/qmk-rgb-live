@@ -41,7 +41,6 @@ function colorPickerValue(event: Event) {
 }
 </script>
 
-
 <template>
   <div class="color-palette" width="100%">
     <template v-for="color in defaultColors" :key="color">
