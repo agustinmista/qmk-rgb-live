@@ -17,7 +17,6 @@ const defaultColors: Array<string> = [
   '#653600',
   '#976536',
   '#b9b9b9',
-  '#868686',
   '#454545',
   '#000000'
 ]
@@ -25,9 +24,20 @@ const defaultColors: Array<string> = [
 function colorOptionStyle(color: string) {
   return {
     backgroundColor: color,
-    width: 100 / defaultColors.length + '%',
-    paddingBottom: 100 / defaultColors.length + '%'
+    width: 100 / (defaultColors.length + 1) + '%',
+    paddingBottom: 100 / (defaultColors.length + 1) + '%'
   }
+}
+
+function colorPickerStyle() {
+  return {
+    width: 100 / (defaultColors.length + 1) + '%',
+  }
+}
+
+function colorPickerValue(event: Event) {
+  let colorPicker = event.target as HTMLInputElement
+  return colorPicker.value
 }
 </script>
 
@@ -37,6 +47,9 @@ function colorOptionStyle(color: string) {
     <template v-for="color in defaultColors" :key="color">
       <div class="color-option" :style="colorOptionStyle(color)" @click="$emit('color-picker-chosen', color)"></div>
     </template>
+    <div class="color-option" :style="colorPickerStyle()" @change="$emit('color-picker-chosen', colorPickerValue($event))">
+      <input type="color">
+    </div>
   </div>
 </template>
 
@@ -50,5 +63,11 @@ function colorOptionStyle(color: string) {
 .color-option:hover {
   cursor: pointer;
   transform: scale(1.1);
+}
+
+input[type=color] {
+  padding: 10%;
+  border-radius: 0;
+  height: 100%;
 }
 </style>
