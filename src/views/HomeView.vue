@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { type Ref, ref } from 'vue'
 import * as WebHID from '@/util/webhid'
+import CardContainer from '@/components/Container/CardContainer.vue'
 import KeyboardSelector from '@/components/Keyboard/KeyboardSelector.vue'
 import KeyboardController from '@/components/Keyboard/KeyboardController.vue'
+
+// Is this a supported browser?
+let supported = WebHID.isSupported()
+
+// Is the device currently connected?
+let connected = ref(false)
 
 // The currently connected device
 let selectedDevice: Ref<HIDDevice | null> = ref(null)
@@ -12,9 +19,6 @@ let selectedKeyboard: Ref<Keyboard | null> = ref(null)
 
 // The currently connected variant
 let selectedVariant: Ref<VariantId | null> = ref(null)
-
-  // Is the device currently connected?
-let connected = ref(false)
 
 // Connect/disconnect device
 async function connect(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
@@ -38,7 +42,10 @@ async function disconnect() {
 <template>
   <div class="configurator-view">
     <Transition mode="out-in">
-      <KeyboardSelector v-if="!connected"
+      <CardContainer v-if="!supported">
+        <span>Your browser does not support WebHID!</span>
+      </CardContainer>
+      <KeyboardSelector v-else-if="!connected"
         @keyboard-selector-connect="connect"
       />
       <KeyboardController v-else
