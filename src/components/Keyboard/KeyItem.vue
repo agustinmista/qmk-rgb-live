@@ -53,17 +53,14 @@ function keyTitle() {
 }
 
 .key:hover {
-  background-color: var(--secondary-hover);
+  transform: scale(1.1);
 }
 
 .key.selected {
   outline-style: solid;
-  outline-offset: -4px;
-  outline-width: 2px;
-  outline-color: red;
-}
-
-.key:hover{
-  transform: scale(1.1);
+  outline-offset: 2px;
+  outline-width: 3px;
+  outline-color: var(--primary);
+  transform: scale(0.85);
 }
 </style>
