@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive } from 'vue'
+import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import KeyArea from '@/components/Keyboard/KeyArea.vue'
 import ColorPicker from '@/components/Util/ColorPicker.vue'
@@ -54,37 +55,12 @@ function clearAll() {
 const colorMap: Map<KeyIndex, HexColor> = reactive(new Map())
 
 function colorChosen(color: HexColor) {
-  const rgb = hexToRGB(color)
+  // Update UI
   selectedKeys.forEach(index => {
-    // Update UI
     colorMap.set(index, color)
-    // Update keyboard
-    let data = new Array(32).fill(0);
-    data.splice(0, 5, rgb?.r, rgb?.g, rgb?.b, index[0], index[1])
-    sendMessage(data)
   })
-}
-
-function hexToRGB(hex: HexColor) {
-  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result) {
-    return null
-  } else {
-    return {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    }
-  }
-}
-
-// WebHID stuff
-
-async function sendMessage(data: Array<number>) {
-  if (props.device && props.device.opened) {
-    console.log('Sending data:', data)
-    await props.device.sendReport(0x0, new Uint8Array(data))
-  }
+  // Update keyboard
+  WebHID.remoteRGBSendSetColor(props.device, color, Array.from(selectedKeys))
 }
 </script>
 

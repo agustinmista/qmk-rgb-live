@@ -2,6 +2,7 @@
 import { type Ref, ref, onMounted } from 'vue'
 import { loadKeyboards } from '@/util/keyboardLoader'
 import { groupBy } from '@/util/groupBy'
+import * as WebHID from '@/util/webhid'
 import KeyboardSelectorItem from '@/components/Keyboard/KeyboardSelectorItem.vue'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import PlusIcon from '@/components/Icon/PlusIcon.vue'
@@ -13,14 +14,11 @@ const emit = defineEmits([
 
 // Devices
 
-// Retrieve the WebHID API
-const hid = navigator.hid
-
 // Retrieve the paired HID devices
 let devices: Ref<Array<HIDDevice>> = ref([])
 
 async function updateDevices() {
-  devices.value = await hid.getDevices()
+  devices.value = await WebHID.getDevices()
 }
 
 onMounted(updateDevices)
@@ -29,10 +27,6 @@ onMounted(updateDevices)
 
 // Load the supported keyboard definitions
 const keyboards: Record<KeyboardId, Keyboard> = loadKeyboards()
-
-function connectDevice(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
-  emit('keyboard-selector-connect', device, keyboard, variant)
-}
 
 // Compute matching combinations of devices and keyboard (by name)
 function matchDevicesAndKeyboards() {
@@ -49,20 +43,20 @@ function matchDevicesAndKeyboards() {
   return groups
 }
 
-// WebHID stuff
+// Event handlers
 
-async function pairDevice() {
-  console.log('Pairing new device ...')
-  await hid.requestDevice({ filters: [] })
+function connect(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
+  emit('keyboard-selector-connect', device, keyboard, variant)
+}
+
+async function pair() {
+  await WebHID.pairDevice()
   await updateDevices()
 }
 
-async function forgetDevice(device: HIDDevice) {
-  if (device) {
-    console.log('Forgeting device ...')
-    await device.forget()
-    await updateDevices()
-  }
+async function forget(device: HIDDevice) {
+  await WebHID.forgetDevice(device)
+  await updateDevices()
 }
 </script>
 
@@ -75,7 +69,7 @@ async function forgetDevice(device: HIDDevice) {
         <h3>Paired devices</h3>
       </div>
       <div class="button-grid-b3">
-        <button class="green" @click="pairDevice"><PlusIcon /></button>
+        <button class="green" @click="pair"><PlusIcon /></button>
       </div>
     </div>
 
@@ -93,8 +87,8 @@ async function forgetDevice(device: HIDDevice) {
           :name="deviceGroup.name"
           :devices="deviceGroup.devices"
           :keyboard="deviceGroup.keyboard"
-          @keyboard-selector-item-forget="forgetDevice"
-          @keyboard-selector-item-connect="connectDevice"
+          @keyboard-selector-item-forget="forget"
+          @keyboard-selector-item-connect="connect"
         />
       </template>
     </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type Ref, ref } from 'vue'
+import * as WebHID from '@/util/webhid'
 import KeyboardSelector from '@/components/Keyboard/KeyboardSelector.vue'
 import KeyboardController from '@/components/Keyboard/KeyboardController.vue'
 
@@ -16,20 +17,20 @@ let selectedVariant: Ref<VariantId | null> = ref(null)
 let connected = ref(false)
 
 // Connect/disconnect device
-async function connectDevice(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
-  console.log('Connecting device ...', { device, keyboard, variant })
+async function connect(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
   selectedDevice.value = device
   selectedKeyboard.value = keyboard
   selectedVariant.value = variant
-  await selectedDevice.value.open()
-  connected.value = selectedDevice.value.opened
+  connected.value = await WebHID.connectDevice(selectedDevice.value)
+  if (connected.value) {
+    await WebHID.remoteRGBSendStart(selectedDevice.value!)
+  }
 }
 
-async function disconnectDevice() {
-  if (selectedDevice.value && selectedDevice.value.opened) {
-    console.log('Disconnecting device ...')
-    await selectedDevice.value.close()
-    connected.value = selectedDevice.value.opened
+async function disconnect() {
+  if (selectedDevice.value) {
+    await WebHID.remoteRGBSendStop(selectedDevice.value!)
+    connected.value = await WebHID.disconnectDevice(selectedDevice.value)
   }
 }
 </script>
@@ -38,13 +39,13 @@ async function disconnectDevice() {
   <div class="configurator-view">
     <Transition mode="out-in">
       <KeyboardSelector v-if="!connected"
-        @keyboard-selector-connect="connectDevice"
+        @keyboard-selector-connect="connect"
       />
       <KeyboardController v-else
         :device="selectedDevice!"
         :keyboard="selectedKeyboard!"
         :variant="selectedVariant!"
-        @keyboard-controller-disconnect="disconnectDevice"
+        @keyboard-controller-disconnect="disconnect"
       />
     </Transition>
   </div>
