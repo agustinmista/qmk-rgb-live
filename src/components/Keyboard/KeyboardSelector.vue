@@ -7,10 +7,6 @@ import CardContainer from '@/components/Container/CardContainer.vue'
 import PlusIcon from '@/components/Icon/PlusIcon.vue'
 import PlusIconSmall from '@/components/Icon/PlusIconSmall.vue'
 
-defineProps<{
-  connected: boolean
-}>()
-
 const emit = defineEmits([
   'keyboard-selector-connect'
 ])
@@ -34,28 +30,26 @@ onMounted(updateDevices)
 // Load the supported keyboard definitions
 const keyboards: Record<KeyboardId, Keyboard> = loadKeyboards()
 
-function connectDevice(device: HIDDevice, keyboard: Keyboard) {
-  emit('keyboard-selector-connect', device, keyboard)
+function connectDevice(device: HIDDevice, keyboard: Keyboard, variant: VariantId) {
+  emit('keyboard-selector-connect', device, keyboard, variant)
 }
 
-// Compute matching combinations of keyboard interfaces and variants
-function matchingDevicesAndKeyboards() {
-  let groups: Array<{ name: string, interfaces: Array<HIDDevice>, variants: Array<Keyboard> }> = []
+// Compute matching combinations of devices and keyboard (by name)
+function matchDevicesAndKeyboards() {
+  let groups: Array<{ name: string, devices: Array<HIDDevice>, keyboard: Keyboard | null }> = []
   let productName = (device: HIDDevice) => device.productName
-  groupBy(devices.value, productName).forEach((deviceInterfaces, deviceName) => {
-    let matchingKeyboards = Object.values(keyboards).filter(keyboard => keyboard.name === deviceName)
+  groupBy(devices.value, productName).forEach((devices, deviceName) => {
+    let keyboard = Object.values(keyboards).find(keyboard => keyboard.name === deviceName)
     groups.push({
       name: deviceName,
-      interfaces: deviceInterfaces,
-      variants: matchingKeyboards
+      devices: devices,
+      keyboard: keyboard ? keyboard : null
     })
   })
   return groups
 }
 
-/*
- * WebHID stuff
- */
+// WebHID stuff
 
 async function pairDevice() {
   console.log('Pairing new device ...')
@@ -86,7 +80,7 @@ async function forgetDevice(device: HIDDevice) {
     </div>
 
     <!-- No paired devices -->
-    <template v-if="!connected && devices.length === 0">
+    <template v-if="devices.length === 0">
       <CardContainer>
         <span>It's lonely in here! Try pressing the <PlusIconSmall /> button.</span>
       </CardContainer>
@@ -94,11 +88,11 @@ async function forgetDevice(device: HIDDevice) {
 
     <!-- Some paired devices -->
     <template v-if="devices.length !== 0">
-      <template v-for="deviceGroup of matchingDevicesAndKeyboards()" :key="deviceGroup.deviceName">
+      <template v-for="deviceGroup of matchDevicesAndKeyboards()" :key="deviceGroup.deviceName">
         <KeyboardSelectorItem
-          :device-name="deviceGroup.name"
-          :device-interfaces="deviceGroup.interfaces"
-          :keyboard-variants="deviceGroup.variants"
+          :name="deviceGroup.name"
+          :devices="deviceGroup.devices"
+          :keyboard="deviceGroup.keyboard"
           @keyboard-selector-item-forget="forgetDevice"
           @keyboard-selector-item-connect="connectDevice"
         />

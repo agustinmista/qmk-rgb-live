@@ -8,6 +8,7 @@ import DisconnectIcon from '../Icon/DisconnectIcon.vue'
 const props = defineProps<{
   device: HIDDevice
   keyboard: Keyboard
+  variant: VariantId
 }>()
 
 const emit = defineEmits([
@@ -22,22 +23,24 @@ function disconnect() {
 
 // Selected keys
 
-const selectedKeys: Set<Index> = reactive(new Set())
+const selectedKeys: Set<KeyIndex> = reactive(new Set())
 
-function toggle(index: Index) {
+function toggle(index: KeyIndex) {
   if (!selectedKeys.delete(index)) {
     selectedKeys.add(index)
   }
 }
 
 function selectAll() {
-  props.keyboard.layout.forEach(key => {
+  const layout = props.keyboard.variants[props.variant]
+  layout.forEach(key => {
     selectedKeys.add(key.index)
   });
 }
 
 function invertAll() {
-  props.keyboard.layout.forEach(key => {
+  const layout = props.keyboard.variants[props.variant]
+  layout.forEach(key => {
     toggle(key.index)
   });
 }
@@ -48,23 +51,21 @@ function clearAll() {
 
 // Selected colors
 
-const colorMap: Map<Index, string> = reactive(new Map())
+const colorMap: Map<KeyIndex, HexColor> = reactive(new Map())
 
-function colorChosen(color: string) {
+function colorChosen(color: HexColor) {
   const rgb = hexToRGB(color)
-  console.log('Chosen color', rgb)
-
   selectedKeys.forEach(index => {
-    // UI
+    // Update UI
     colorMap.set(index, color)
-    // Keyboard
+    // Update keyboard
     let data = new Array(32).fill(0);
     data.splice(0, 5, rgb?.r, rgb?.g, rgb?.b, index[0], index[1])
     sendMessage(data)
   })
 }
 
-function hexToRGB(hex: string) {
+function hexToRGB(hex: HexColor) {
   let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   if (!result) {
     return null
@@ -81,15 +82,13 @@ function hexToRGB(hex: string) {
 
 async function sendMessage(data: Array<number>) {
   if (props.device && props.device.opened) {
-    console.log('Sending data:')
-    console.log(data)
+    console.log('Sending data:', data)
     await props.device.sendReport(0x0, new Uint8Array(data))
   }
 }
 </script>
 
 <template>
-
   <div class="keyboard-controller">
 
     <!-- Header -->
@@ -105,13 +104,13 @@ async function sendMessage(data: Array<number>) {
 
     <!-- The good stuff -->
     <CardContainer>
-      <!-- Color picker -->
+      <!-- HexColor picker -->
       <ColorPicker
         @color-picker-chosen="colorChosen"
       />
       <!-- Key area -->
       <KeyArea
-        :keys="keyboard.layout"
+        :layout="keyboard.variants[variant]"
         :selected="selectedKeys"
         :colors="colorMap"
         @key-area-toggle="toggle"

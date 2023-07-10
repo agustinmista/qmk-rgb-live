@@ -6,9 +6,9 @@ import ConnectIcon from '@/components/Icon/ConnectIcon.vue'
 import TrashIcon from '@/components/Icon/TrashIcon.vue'
 
 const props = defineProps<{
-  deviceName: string
-  deviceInterfaces: Array<HIDDevice>
-  keyboardVariants: Array<Keyboard>
+  name: string
+  devices: Array<HIDDevice>
+  keyboard: Keyboard | null
 }>()
 
 const emit = defineEmits([
@@ -16,35 +16,35 @@ const emit = defineEmits([
   'keyboard-selector-item-forget'
 ])
 
-type ArrayIndex = number | null
+type ArrayIndex = number
 
-function isNull(i: ArrayIndex) { return i === null }
+function isNull(i: any | null) { return i === null }
 
 // The selected device interface
-let selectedInterface: Ref<ArrayIndex> = ref(null);
+let selectedDevice: Ref<ArrayIndex | null> = ref(null);
 
-// The selected keyboard
-var selectedVariant: Ref<ArrayIndex> = ref(null);
+// The selected variant
+var selectedVariant: Ref<VariantId | null> = ref(null);
 
 // Helpers
 
 function canConnect() {
-  return isDeviceSupported() && !isNull(selectedInterface.value) && !isNull(selectedVariant.value)
+  return isDeviceSupported() && !isNull(selectedDevice.value) && !isNull(selectedVariant.value)
 }
 
 function renderDeviceOption(index: number) {
-  const device = props.deviceInterfaces[index]
-  const [vendorId, productId, usage, usagePage] = deviceUSBParams(device)
+  const device = props.devices[index]
+  const { vendorId, productId, usage, usagePage } = deviceUSBParams(device)
   return `#${index} (vendorId: ${vendorId},productId: ${productId}, usage: ${usage}, usagePage: ${usagePage})`
 }
 
 function renderVariantOption(index: number) {
-  const variant = props.keyboardVariants[index]
-  return (variant.variant ? `${variant.variant}` : ' default')
+  const variant = Object.keys(props.keyboard!.variants)[index]
+  return `${variant}`
 }
 
 function isDeviceSupported() {
-  return props.keyboardVariants.length > 0
+  return props.keyboard !== null
 }
 
 function deviceUsage(device: HIDDevice) {
@@ -56,55 +56,99 @@ function deviceUsagePage(device: HIDDevice) {
 }
 
 function deviceUSBParams(device: HIDDevice) {
-  return [
-    device.vendorId,
-    device.productId,
-    deviceUsage(device),
-    deviceUsagePage(device)
-  ]
+  return {
+    vendorId: device.vendorId,
+    productId: device.productId,
+    usage: deviceUsage(device),
+    usagePage: deviceUsagePage(device)
+  } as HIDDeviceFilter
 }
 
-// Devices and variants computed by default
-// We select the first combination of device interface and keyboard variant such
-// that the interface matches all the USB parameter defined in the variant.
-function computeDefaultOptions() {
-  props.deviceInterfaces.forEach((deviceInterface, interfaceIndex) => {
-    props.keyboardVariants.forEach((keyboardVariant, variantIndex) => {
-      let ok = true
-      const checkParam = (variantParam: string | undefined, interfaceParam: number) => {
-        if (variantParam && parseInt(variantParam, 16) !== interfaceParam) { ok = false }
-      }
-      checkParam(keyboardVariant.usb.vendorId, deviceInterface.vendorId)
-      checkParam(keyboardVariant.usb.productId, deviceInterface.productId)
-      checkParam(keyboardVariant.usb.usage, deviceUsage(deviceInterface))
-      checkParam(keyboardVariant.usb.usagePage, deviceUsagePage(deviceInterface))
-      if (ok) {
-        selectedInterface.value = interfaceIndex
-        selectedVariant.value = variantIndex
-      }
-    })
+// Select the device indices that match all the USB parameters defined by this keyboard
+function pickMatchingDevices(filter: HIDDeviceFilter) {
+  const checkParam = (filterParam: number | undefined, deviceParam: number | undefined) => {
+    if (!filterParam) { // Keyboard doesn't define param
+      return true
+    } else if (!deviceParam) { // Keybord defines param but device doesn't
+      return false
+    } else { // Both device and keyboard define the param
+      return filterParam === deviceParam
+    }
+  }
+  let matching: Array<ArrayIndex> = []
+  props.devices.forEach((device: HIDDevice, index) => {
+    if (
+      checkParam(filter.vendorId, device.vendorId) &&
+      checkParam(filter.productId, device.productId) &&
+      checkParam(filter.usage, deviceUsage(device)) &&
+      checkParam(filter.usagePage, deviceUsagePage(device))
+    ) {
+      matching.push(index)
+    }
   })
+  return matching
+}
+
+// Set the default configuration of interface and variant whenever possible
+// We do this by selected, in order of priority:
+// 2. Picking the first option when there's only one available
+// 1. Retrieving a saved value from the local storage if one exists
+// 3. For devices only, picking the one that matches all the usb parameters (if there's only one such device)
+function computeDefaultOptions() {
+
+  // Unsupported devices don't have a keyboard attached
+  if (!props.keyboard) { return }
+
+  // Load any saved config from the local storage
+  const savedConfig = loadConfigFromLocalStorage()
+  const savedDevice = savedConfig ? pickMatchingDevices(savedConfig.device) : []
+
+  // Default device
+  if (props.devices.length === 1) { // Only one option
+    console.log('Default device: only one')
+    selectedDevice.value = 0
+  } else if (savedConfig && savedDevice.length === 1) { // There was an existing config and it matches an paired device
+    console.log('Default device: read from local storage')
+    selectedDevice.value = savedDevice[0]
+  } else {
+    const matchingDevices = pickMatchingDevices(props.keyboard.usb)
+    if (matchingDevices.length === 1) { // There is exactly one device matching the usb parameters of the keyboard
+      console.log('Default device: using keyboard-defined one')
+      selectedDevice.value = matchingDevices[0]
+    }
+  }
+
+  // Default variant
+  if (props.keyboard && Object.keys(props.keyboard.variants).length === 1) { // Only one option
+    console.log('Default variant: only one option')
+    selectedVariant.value = Object.keys(props.keyboard!.variants)[0]
+  } else if (savedConfig) { // There was an existing config
+    console.log('Default variant: read from local storage')
+    selectedVariant.value = savedConfig.variant
+  }
 }
 
 onMounted(computeDefaultOptions)
 
 // Event handlers
 
-function connect(interfaceIndex: ArrayIndex, variantIndex: ArrayIndex) {
-  if (!isNull(interfaceIndex) && !isNull(variantIndex)) {
+function connect(device: ArrayIndex, variant: VariantId) {
+  if (!isNull(device) && !isNull(variant)) {
     emit(
       'keyboard-selector-item-connect',
-      props.deviceInterfaces[interfaceIndex!],
-      props.keyboardVariants[variantIndex!]
+      props.devices[device!],
+      props.keyboard,
+      variant
     )
+    saveConfigToLocalStorage()
   }
 }
 
-function forget(interfaceIndex: ArrayIndex) {
-  if (!isNull(interfaceIndex)) {
+function forget(device: ArrayIndex) {
+  if (!isNull(device)) {
     emit(
       'keyboard-selector-item-forget',
-      props.deviceInterfaces[interfaceIndex!]
+      props.devices[device!]
     )
   }
 }
@@ -115,6 +159,39 @@ let configOpen: Ref<boolean> = ref(false)
 function toggleConfig() {
   configOpen.value = !configOpen.value
 }
+
+// Local storage
+
+interface ItemConfig {
+  device: HIDDeviceFilter,
+  variant: VariantId
+}
+
+function saveConfigToLocalStorage() {
+  const key = props.keyboard!.id
+  const device = props.devices[selectedDevice.value!]
+  const variant = selectedVariant.value!
+  const config: ItemConfig = {
+    device: {
+      vendorId: device.vendorId,
+      productId: device.productId,
+      usage: deviceUsage(device),
+      usagePage: deviceUsagePage(device)
+    },
+    variant: variant
+  }
+  console.log('Saving config data', { key, config })
+  const value = JSON.stringify(config)
+  localStorage.setItem(key, value)
+}
+
+function loadConfigFromLocalStorage() {
+  const key = props.keyboard!.id
+  const value = localStorage.getItem(key)
+  const config = value ? JSON.parse(value) as ItemConfig : null
+  console.log('Read config data', { key, config })
+  return config
+}
 </script>
 
 <template>
@@ -124,13 +201,13 @@ function toggleConfig() {
     <div class="button-grid">
       <div class="button-grid-header">
         <h4>
-          <span>{{ deviceName ? deviceName : 'Unknown device' }}</span>
+          <span>{{ name ? name : 'Unknown device' }}</span>
           <i>{{ isDeviceSupported() ? '' : ' (not supported)' }}</i>
         </h4>
-        <i>{{ keyboardVariants.length > 0 ? keyboardVariants[0].manufacturer : 'Unknown manufacturer' }}</i>
+        <i>{{ keyboard ? keyboard.manufacturer : 'Unknown manufacturer' }}</i>
       </div>
       <div class="button-grid-b1">
-        <button class="green" @click="connect(selectedInterface, selectedVariant)" :disabled="!canConnect()">
+        <button class="green" @click="connect(selectedDevice!, selectedVariant!)" :disabled="!canConnect()">
           <ConnectIcon />
         </button>
       </div>
@@ -146,7 +223,7 @@ function toggleConfig() {
       </div>
     </div>
 
-    <!-- Supported device -->
+    <!-- Config pane -->
     <div v-if="isDeviceSupported() && configOpen">
       <div class="grid">
         <!-- Keyboard -->
@@ -156,19 +233,19 @@ function toggleConfig() {
           </label>
           <select id="variant-selector" v-model="selectedVariant">
             <option disabled selected value>Select an option</option>
-            <template v-for="(keyboardVariant, index) in keyboardVariants" :key="keyboardVariant.id">
-              <option :value="index">{{ renderVariantOption(index) }}</option>
+            <template v-for="(variant, index) in Object.keys(keyboard!.variants)" :key="variant">
+              <option :value="variant">{{ renderVariantOption(index) }}</option>
             </template>
           </select>
         </div>
-        <!-- Interface -->
+        <!-- Device -->
         <div>
-          <label for="interface-selector">
+          <label for="device-selector">
             <strong>Device interface</strong>
           </label>
-          <select id="interface-selector" v-model="selectedInterface">
+          <select id="device-selector" v-model="selectedDevice">
             <option disabled selected value>Select an option</option>
-            <template v-for="(deviceInterface, index) of deviceInterfaces" :key="deviceUSBParams(deviceInterface)">
+            <template v-for="(device, index) of devices" :key="deviceUSBParams(device)">
               <option :value="index">{{ renderDeviceOption(index) }}</option>
             </template>
           </select>

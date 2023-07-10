@@ -6,10 +6,12 @@ export function loadKeyboards(): Record<KeyboardId, Keyboard> {
   for (const kbd of Object.values(jsons)) {
     // Show some debug info
     console.log(`Loading definition for ${kbd.id} ...`)
-    // Normalize the key layout
-    kbd.layout.forEach((key: Key) => {
-      if (!key.w) { key.w = 1 }
-      if (!key.h) { key.h = 1 }
+    // Normalize the key layout of each variant
+    Object.keys(kbd.variants).forEach((variant: VariantId) => {
+      kbd.variants[variant].forEach((key: Key) => {
+        if (!key.w) { key.w = 1 }
+        if (!key.h) { key.h = 1 }
+      })
     })
     // Push it to the record
     keyboards[kbd.id] = kbd as Keyboard

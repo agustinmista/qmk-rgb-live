@@ -1,37 +1,33 @@
 /// <reference types="vite/client" />
 
+type HexColor = string
+
 /*
  * Keyboards
  */
 
-type Index = Array<number>
+type KeyboardId = string
+type VariantId = string
+
+type KeyIndex = Array<number>
 
 interface Key {
-  index: Index
+  index: KeyIndex
   x: number
   y: number
   w: number
   h: number
 }
 
-type KeyboardId = string
 type Layout = Array<Key>
-
-interface KeyboardUSBParams {
-  vendorId?: string,
-  productId?: string,
-  usage?: string,
-  usagePage?: string
-}
 
 interface Keyboard {
   id: KeyboardId
   name: string
-  variant?: string
   manufacturer: string
   url: string
-  usb: KeyboardUSBParams
-  layout: Layout
+  usb: HIDDeviceFilter
+  variants: Record<string, Layout>
 }
 
 /*

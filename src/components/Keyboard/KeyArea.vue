@@ -3,9 +3,9 @@ import { watch } from 'vue';
 import KeyItem from '@/components/Keyboard/KeyItem.vue';
 
 const props = defineProps<{
-  keys: Array<Key>,
-  selected: Set<Index>
-  colors: Map<Index, string>
+  layout: Array<Key>,
+  selected: Set<KeyIndex>
+  colors: Map<KeyIndex, HexColor>
 }>()
 
 defineEmits([
@@ -29,7 +29,7 @@ function computeLayoutDimensions(keys: Array<Key>) {
 }
 
 // Recompute layout whenever we select a new keyboard
-watch(() => props.keys, computeLayoutDimensions, { immediate: true })
+watch(() => props.layout, computeLayoutDimensions, { immediate: true })
 
 // Some shorthands to simplify template
 function keyX(key: Key) { return scale * (key.x + extra) }
@@ -55,7 +55,7 @@ function keyColor(key: Key) {
 
     <!-- Keys area -->
     <div class="keycanvas" :style="layoutStyle()">
-      <template v-for="key in keys" :key="key.matrix">
+      <template v-for="key in layout" :key="key.matrix">
         <KeyItem :index="key.index" :color="keyColor(key)" :x="keyX(key)" :y="keyY(key)" :w="keyW(key)" :h="keyH(key)" :selected="selected.has(key.index)" @key-toggle="$emit('key-area-toggle', key.index)" />
       </template>
     </div>
