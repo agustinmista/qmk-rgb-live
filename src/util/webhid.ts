@@ -77,7 +77,6 @@ export async function remoteRGBSendStop(device: HIDDevice) {
 export async function remoteRGBSendSetColor(device: HIDDevice, color: HexColor, keys: Array<KeyIndex>) {
   const chunks = chunkify(keys, 12)
   for (const chunk of chunks) {
-    console.log('chunk', chunk)
     // * data[0]: message_kind
     // * data[1-3]: r,g,b values
     // * data[4]: count
