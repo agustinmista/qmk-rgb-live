@@ -2,7 +2,7 @@
 import NavMenu from '@/components/Nav/NavMenu.vue'
 import NavLink from '@/components/Nav/NavLink.vue'
 import MainSection from '@/components/Section/MainSection.vue'
-import logo from '@/assets/img/logo.svg'
+import logo from '@/assets/img/logo.png'
 </script>
 
 <template>

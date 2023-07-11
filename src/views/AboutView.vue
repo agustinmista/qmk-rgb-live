@@ -1,4 +1,4 @@
-1x2uR<script setup lang="ts">
+<script setup lang="ts">
 import screenshotSelector from '@/assets/img/screenshot_selector.png'
 import screenshotSelectorConfigOpen from '@/assets/img/screenshot_selector_config_open.png'
 import screenshotControllerSweden from '@/assets/img/screenshot_controller_sweden.png'
@@ -263,7 +263,12 @@ import CardContainer from '@/components/Container/CardContainer.vue'
           <b>In <i>keymap.c</i>, add <a :href="remoteRGBCodeURL">this snippet</a></b>
         </p>
       </details>
+      <br />
 
+      <details>
+        <summary><strong>Attribution</strong></summary>
+        <a href="https://www.flaticon.com/free-icons/keyboard" title="keyboard icons">Keyboard icons created by Bamicon - Flaticon</a>
+      </details>
 
     </CardContainer>
   </div>

@@ -10,7 +10,7 @@ defineProps<{
     <!-- To the left -->
     <ul>
       <li>
-        <img :src="logo" width="32" height="32" />
+        <img id="logo" :src="logo" width="48" height="48" />
       </li>
       <li>
         <strong>{{ name }}</strong>
@@ -33,5 +33,9 @@ nav {
   backdrop-filter: saturate(180%) blur(20px);
   background-color: var(--nav-background-color);
   box-shadow: 0 1px 0 var(--nav-border-color);
+}
+
+#logo {
+  padding: 0
 }
 </style>
