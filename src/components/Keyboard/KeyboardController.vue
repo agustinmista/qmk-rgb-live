@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, ref } from 'vue'
+import { type Ref, ref, onMounted, onUnmounted } from 'vue'
 import { groupProjectBy } from '@/util/groupBy'
 import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
@@ -82,6 +82,25 @@ function presetChosen(preset: ColorMap) {
     WebHID.remoteRGBSendSetColor(props.device, color, keys)
   })
 }
+
+// Handle global key presses
+function onKeyPress(event: KeyboardEvent) {
+  event.preventDefault()
+  switch (event.key) {
+    case 'a':
+      selectAll()
+      break
+    case 'i':
+      invertAll()
+      break
+    case 'Escape':
+      clearAll()
+      break
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', onKeyPress))
+onUnmounted(() => window.removeEventListener('keydown', onKeyPress))
 </script>
 
 <template>
