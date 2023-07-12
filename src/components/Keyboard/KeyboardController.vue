@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Ref, ref } from 'vue'
-import { groupBy } from '@/util/groupBy'
+import { groupProjectBy } from '@/util/groupBy'
 import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import KeyArea from '@/components/Keyboard/KeyArea.vue'
@@ -77,7 +77,7 @@ function presetChosen(preset: ColorMap) {
     colorMap.value.set(keyIndex, color ? color : '#000000')
   });
   // Update keyboard
-  const colors = groupBy(Array.from(preset), tup => tup[1], tup => JSON.parse(tup[0]))
+  const colors = groupProjectBy(Array.from(preset), tup => tup[1], tup => JSON.parse(tup[0]))
   colors.forEach((keys, color) => {
     WebHID.remoteRGBSendSetColor(props.device, color, keys)
   })
