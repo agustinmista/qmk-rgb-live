@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted } from 'vue'
+import { router } from '@/router'
 import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import ConfigIcon from '@/components/Icon/ConfigIcon.vue'
@@ -112,7 +113,28 @@ function computeDefaultOptions() {
   }
 }
 
-onMounted(computeDefaultOptions)
+// Handle auomatic connection by URL query params
+function handleConnectQueryParams() {
+  let params = router.currentRoute.value.query
+  if ('connect' in params) {
+    console.log(props.keyboard, selectedDevice, selectedVariant)
+    if(
+      !isNull(props.keyboard) &&
+      !isNull(selectedDevice.value) &&
+      !isNull(selectedVariant.value) &&
+      props.keyboard!.id === params.connect
+      ) {
+      console.log('Connecting automatically', props.keyboard!.id)
+      router.replace({'query': undefined})
+      connect(selectedDevice.value!, selectedVariant.value!)
+    }
+  }
+}
+
+onMounted(() => {
+  computeDefaultOptions()
+  handleConnectQueryParams()
+})
 
 // Event handlers
 
