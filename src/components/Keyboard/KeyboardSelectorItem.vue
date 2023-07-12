@@ -117,7 +117,7 @@ function computeDefaultOptions() {
 function handleConnectQueryParams() {
   let params = router.currentRoute.value.query
   if ('connect' in params) {
-    console.log(props.keyboard, selectedDevice, selectedVariant)
+    router.replace({'query': undefined})
     if(
       !isNull(props.keyboard) &&
       !isNull(selectedDevice.value) &&
@@ -125,7 +125,6 @@ function handleConnectQueryParams() {
       props.keyboard!.id === params.connect
       ) {
       console.log('Connecting automatically', props.keyboard!.id)
-      router.replace({'query': undefined})
       connect(selectedDevice.value!, selectedVariant.value!)
     }
   }
