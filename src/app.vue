@@ -15,5 +15,3 @@ import logo from '@/assets/img/logo.png'
   <!-- Main content -->
   <MainSection />
 </template>
-
-<style scoped></style>
