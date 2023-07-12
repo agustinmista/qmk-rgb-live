@@ -1,12 +1,18 @@
-export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
-  const map = new Map<K, Array<V>>();
+type Getter<K,V> = (input: V) => K
+type Proj<V,W> = (input: V) => W
+
+function id<V,W>(x: V) { return x as unknown as W }
+
+export function groupBy<K, V, W>(list: Array<V>, getter: Getter<K,V>, proj: Proj<V,W> = id): Map<K, Array<W>> {
+  const map = new Map<K, Array<W>>()
   list.forEach((item) => {
-    const key = keyGetter(item);
-    const collection = map.get(key);
-    if (!collection) {
-      map.set(key, [item]);
+    const key = getter(item)
+    const val = proj(item)
+    const arr = map.get(key)
+    if (!arr) {
+      map.set(key, [val])
     } else {
-      collection.push(item);
+      arr.push(val)
     }
   });
   return map;

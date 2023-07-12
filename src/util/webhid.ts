@@ -52,6 +52,23 @@ export async function sendMessage(device: HIDDevice, data: Array<number>) {
   await device.sendReport(0x0, new Uint8Array(data))
 }
 
+export function deviceUsage(device: HIDDevice) {
+  return device.collections[0].usage!
+}
+
+export function deviceUsagePage(device: HIDDevice) {
+  return device.collections[0].usagePage!
+}
+
+export function deviceUSBParams(device: HIDDevice) {
+  return {
+    vendorId: device.vendorId,
+    productId: device.productId,
+    usage: deviceUsage(device),
+    usagePage: deviceUsagePage(device)
+  } as HIDDeviceFilter
+}
+
 /*
  * Remote RGB interface
  */

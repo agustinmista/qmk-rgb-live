@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { type Ref, ref } from 'vue'
+import { groupBy } from '@/util/groupBy'
 import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import KeyArea from '@/components/Keyboard/KeyArea.vue'
-import ColorPicker from '@/components/Util/ColorPicker.vue'
+import ColorPicker from '@/components/Keyboard/ColorPicker.vue'
+import PresetSelector from '@/components/Keyboard/PresetSelector.vue'
 import DisconnectIcon from '../Icon/DisconnectIcon.vue'
 
 const props = defineProps<{
@@ -24,18 +26,18 @@ function disconnect() {
 
 // Selected keys
 
-const selectedKeys: Set<KeyIndex> = reactive(new Set())
+const selectedKeys: Ref<Set<KeyIndex>> = ref(new Set<KeyIndex>())
 
 function toggle(index: KeyIndex) {
-  if (!selectedKeys.delete(index)) {
-    selectedKeys.add(index)
+  if (!selectedKeys.value.delete(index)) {
+    selectedKeys.value.add(index)
   }
 }
 
 function selectAll() {
   const layout = props.keyboard.variants[props.variant]
   layout.forEach(key => {
-    selectedKeys.add(key.index)
+    selectedKeys.value.add(key.index)
   });
 }
 
@@ -47,20 +49,38 @@ function invertAll() {
 }
 
 function clearAll() {
-  selectedKeys.clear()
+  selectedKeys.value.clear()
 }
 
 // Selected colors
 
-const colorMap: Map<KeyIndex, HexColor> = reactive(new Map())
+const colorMap: Ref<ColorMap> = ref(new Map())
 
 function colorChosen(color: HexColor) {
   // Update UI
-  selectedKeys.forEach(index => {
-    colorMap.set(index, color)
+  selectedKeys.value.forEach(index => {
+    const keyIndex = JSON.stringify(index)
+    colorMap.value.set(keyIndex, color)
   })
   // Update keyboard
-  WebHID.remoteRGBSendSetColor(props.device, color, Array.from(selectedKeys))
+  const keys = Array.from(selectedKeys.value)
+  WebHID.remoteRGBSendSetColor(props.device, color, keys)
+}
+
+function presetChosen(preset: ColorMap) {
+  // Update UI
+  colorMap.value.clear()
+  const layout = props.keyboard.variants[props.variant]
+  layout.forEach(key => {
+    let keyIndex = JSON.stringify(key.index)
+    let color = preset.get(keyIndex)
+    colorMap.value.set(keyIndex, color ? color : '#000000')
+  });
+  // Update keyboard
+  const colors = groupBy(Array.from(preset), tup => tup[1], tup => JSON.parse(tup[0]))
+  colors.forEach((keys, color) => {
+    WebHID.remoteRGBSendSetColor(props.device, color, keys)
+  })
 }
 </script>
 
@@ -80,10 +100,7 @@ function colorChosen(color: HexColor) {
 
     <!-- The good stuff -->
     <CardContainer>
-      <!-- HexColor picker -->
-      <ColorPicker
-        @color-picker-chosen="colorChosen"
-      />
+
       <!-- Key area -->
       <KeyArea
         :layout="keyboard.variants[variant]"
@@ -94,6 +111,19 @@ function colorChosen(color: HexColor) {
         @key-area-invert-all="invertAll"
         @key-area-clear-all="clearAll"
       />
+
+      <!-- Color picker -->
+      <ColorPicker
+        @color-picker-chosen="colorChosen"
+      />
+
+      <!-- Preset selector -->
+      <PresetSelector
+        :keyboard="keyboard"
+        :colors="colorMap"
+        @preset-selector-load="presetChosen"
+      />
+
     </CardContainer>
   </div>
 </template>

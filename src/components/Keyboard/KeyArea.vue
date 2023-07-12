@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { watch } from 'vue';
-import KeyItem from '@/components/Keyboard/KeyItem.vue';
+import { watch } from 'vue'
+import KeyItem from '@/components/Keyboard/KeyItem.vue'
 
 const props = defineProps<{
   layout: Array<Key>,
   selected: Set<KeyIndex>
-  colors: Map<KeyIndex, HexColor>
+  colors: ColorMap
 }>()
 
 defineEmits([
@@ -45,7 +45,7 @@ function layoutStyle() {
 }
 
 function keyColor(key: Key) {
-  const color = props.colors.get(key.index)
+  const color = props.colors.get(JSON.stringify(key.index))
   return color ? color : null
 }
 </script>
@@ -56,16 +56,22 @@ function keyColor(key: Key) {
     <!-- Keys area -->
     <div class="keycanvas" :style="layoutStyle()">
       <template v-for="key in layout" :key="key.matrix">
-        <KeyItem :index="key.index" :color="keyColor(key)" :x="keyX(key)" :y="keyY(key)" :w="keyW(key)" :h="keyH(key)" :selected="selected.has(key.index)" @key-toggle="$emit('key-area-toggle', key.index)" />
+        <KeyItem
+          :index="key.index" :color="keyColor(key)"
+          :x="keyX(key)" :y="keyY(key)" :w="keyW(key)" :h="keyH(key)"
+          :selected="selected.has(key.index)"
+          @key-toggle="$emit('key-area-toggle', key.index)"
+        />
       </template>
     </div>
 
     <!-- Selection area -->
     <div class="grid">
-      <button class="secondary" @click="$emit('key-area-select-all')">Select all</button>
-      <button class="secondary" @click="$emit('key-area-invert-all')">Invert all</button>
-      <button class="secondary" @click="$emit('key-area-clear-all')">Clear all</button>
+      <button @click="$emit('key-area-select-all')">Select all</button>
+      <button @click="$emit('key-area-invert-all')">Invert all</button>
+      <button @click="$emit('key-area-clear-all')">Clear all</button>
     </div>
+
   </div>
 </template>
 
@@ -80,11 +86,11 @@ function keyColor(key: Key) {
   margin-bottom: calc(var(--block-spacing-vertical) / 3);
   border-style: solid;
   border-width: 4px;
-  border-color: var(--secondary);
+  border-color: var(--primary);
   border-radius: 10px;
 }
 
-.grid {
+.grid, .button-grid {
   padding-left: 0;
   padding-right: 0;
   column-gap: 2em;

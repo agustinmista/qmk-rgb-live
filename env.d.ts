@@ -1,7 +1,5 @@
 /// <reference types="vite/client" />
 
-type HexColor = string
-
 /*
  * Keyboards
  */
@@ -18,6 +16,9 @@ interface Key {
   w: number
   h: number
 }
+
+type HexColor = string
+type ColorMap = Map<string, HexColor>
 
 type Layout = Array<Key>
 

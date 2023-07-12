@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type Ref, ref, onMounted } from 'vue'
+import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import ConfigIcon from '@/components/Icon/ConfigIcon.vue'
 import ConnectIcon from '@/components/Icon/ConnectIcon.vue'
@@ -34,7 +35,7 @@ function canConnect() {
 
 function renderDeviceOption(index: number) {
   const device = props.devices[index]
-  const { vendorId, productId, usage, usagePage } = deviceUSBParams(device)
+  const { vendorId, productId, usage, usagePage } = WebHID.deviceUSBParams(device)
   return `#${index} (vendorId: ${vendorId},productId: ${productId}, usage: ${usage}, usagePage: ${usagePage})`
 }
 
@@ -45,23 +46,6 @@ function renderVariantOption(index: number) {
 
 function isDeviceSupported() {
   return props.keyboard !== null
-}
-
-function deviceUsage(device: HIDDevice) {
-  return device.collections[0].usage!
-}
-
-function deviceUsagePage(device: HIDDevice) {
-  return device.collections[0].usagePage!
-}
-
-function deviceUSBParams(device: HIDDevice) {
-  return {
-    vendorId: device.vendorId,
-    productId: device.productId,
-    usage: deviceUsage(device),
-    usagePage: deviceUsagePage(device)
-  } as HIDDeviceFilter
 }
 
 // Select the device indices that match all the USB parameters defined by this keyboard
@@ -80,8 +64,8 @@ function pickMatchingDevices(filter: HIDDeviceFilter) {
     if (
       checkParam(filter.vendorId, device.vendorId) &&
       checkParam(filter.productId, device.productId) &&
-      checkParam(filter.usage, deviceUsage(device)) &&
-      checkParam(filter.usagePage, deviceUsagePage(device))
+      checkParam(filter.usage, WebHID.deviceUsage(device)) &&
+      checkParam(filter.usagePage, WebHID.deviceUsagePage(device))
     ) {
       matching.push(index)
     }
@@ -168,15 +152,15 @@ interface ItemConfig {
 }
 
 function saveConfigToLocalStorage() {
-  const key = props.keyboard!.id
   const device = props.devices[selectedDevice.value!]
   const variant = selectedVariant.value!
+  const key = `config_${props.keyboard!.id}`
   const config: ItemConfig = {
     device: {
       vendorId: device.vendorId,
       productId: device.productId,
-      usage: deviceUsage(device),
-      usagePage: deviceUsagePage(device)
+      usage: WebHID.deviceUsage(device),
+      usagePage: WebHID.deviceUsagePage(device)
     },
     variant: variant
   }
@@ -186,7 +170,7 @@ function saveConfigToLocalStorage() {
 }
 
 function loadConfigFromLocalStorage() {
-  const key = props.keyboard!.id
+  const key = `config_${props.keyboard!.id}`
   const value = localStorage.getItem(key)
   const config = value ? JSON.parse(value) as ItemConfig : null
   console.log('Read config data', { key, config })
@@ -232,7 +216,7 @@ function loadConfigFromLocalStorage() {
             <strong>Keyboard variant</strong>
           </label>
           <select id="variant-selector" v-model="selectedVariant">
-            <option disabled selected value>Select an option</option>
+            <option disabled selected value="null">Select an option</option>
             <template v-for="(variant, index) in Object.keys(keyboard!.variants)" :key="variant">
               <option :value="variant">{{ renderVariantOption(index) }}</option>
             </template>
@@ -244,8 +228,8 @@ function loadConfigFromLocalStorage() {
             <strong>Device interface</strong>
           </label>
           <select id="device-selector" v-model="selectedDevice">
-            <option disabled selected value>Select an option</option>
-            <template v-for="(device, index) of devices" :key="deviceUSBParams(device)">
+            <option disabled selected value="null">Select an option</option>
+            <template v-for="(device, index) of devices" :key="WebHID.deviceUSBParams(device)">
               <option :value="index">{{ renderDeviceOption(index) }}</option>
             </template>
           </select>

@@ -6,7 +6,7 @@ const props = defineProps<{
   w: number
   h: number,
   selected: boolean
-  color: string | null
+  color: HexColor | null
 }>()
 
 defineEmits([
