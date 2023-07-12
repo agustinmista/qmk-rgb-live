@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, ref } from 'vue'
+import { type Ref, ref, onUnmounted } from 'vue'
 import * as WebHID from '@/util/webhid'
 import CardContainer from '@/components/Container/CardContainer.vue'
 import KeyboardSelector from '@/components/Keyboard/KeyboardSelector.vue'
@@ -37,6 +37,10 @@ async function disconnect() {
     connected.value = await WebHID.disconnectDevice(selectedDevice.value)
   }
 }
+
+// Make sure we disconnect the controller when me move to another page
+onUnmounted(disconnect)
+
 </script>
 
 <template>
