@@ -132,15 +132,15 @@ import CardContainer from '@/components/Container/CardContainer.vue'
             <br />
 
             NOTE: since the HID message size supported by QMK is (as far as I
-            know) 32bytes, we first need to split the selected keys into as
-            messages as needed to tell the keyboard to repaint all the selected
-            keys. Each individual messages communicates up to 12 keys to be
-            repainted at a time. You don't need to care about this, though, it
-            all happens under the hood.
+            know) 32 bytes, we first need to split the selected keys into as
+            many messages as needed to tell the keyboard to repaint all the
+            selected keys. Each individual message communicates up to 12 keys to
+            be repainted at a time. You don't need to care about this, though,
+            it all happens under the hood.
           </li>
           <li>
-            When disconnecting the keyboard, we send the REMOTE_RGB_STOP
-            message to tell the keyboard to leave the REMOTE_RGB mode.
+            When disconnecting the keyboard, we send the REMOTE_RGB_STOP message
+            to tell the keyboard to leave the REMOTE_RGB mode.
           </li>
         </ol>
 
@@ -260,7 +260,7 @@ import CardContainer from '@/components/Container/CardContainer.vue'
         </p>
 
         <p>
-          <b>In <i>keymap.c</i>, add <a :href="remoteRGBCodeURL">this snippet</a></b>
+          <b>In <i>keymap.c</i>, add <a :href="remoteRGBCodeURL" download>this snippet</a></b>
         </p>
       </details>
       <br />
