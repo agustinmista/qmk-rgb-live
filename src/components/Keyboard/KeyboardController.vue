@@ -85,7 +85,7 @@ function presetChosen(preset: ColorMap) {
 
 // Handle global key presses
 function onKeyPress(event: KeyboardEvent) {
-  event.preventDefault()
+  // We don't preventDefault so the save modal doesn't break :)
   switch (event.key) {
     case 'a':
       selectAll()
