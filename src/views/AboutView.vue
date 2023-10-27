@@ -260,7 +260,7 @@ import CardContainer from '@/components/Container/CardContainer.vue'
         </p>
 
         <p>
-          <b>In <i>keymap.c</i>, add <a :href="remoteRGBCodeURL" download>this snippet</a></b>
+          <b>In <i>keymap.c</i>, add <a :href="remoteRGBCodeURL" download="remote_rgb.c">this snippet</a></b>
         </p>
       </details>
       <br />
