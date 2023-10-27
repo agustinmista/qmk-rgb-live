@@ -13,6 +13,14 @@ export const router = createRouter({
       path: '/about',
       name: 'about',
       component: () => import('@/views/AboutView.vue') // Lazy loaded
-    }
+    },
+    {
+      path: '/github',
+      name: 'github',
+      redirect: () => {
+        window.location.href = 'https://github.com/agustinmista/qmk-rgb-live'
+        return '/redirecting'
+      }
+    },
   ]
 })
