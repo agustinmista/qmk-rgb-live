@@ -9,6 +9,7 @@ import logo from '@/assets/img/logo.png'
   <!-- Nav -->
   <NavMenu name="QMK RGB live configurator" :logo="logo">
     <NavLink to="/">Home</NavLink>
+    <NavLink to="/lab">Lab</NavLink>
     <NavLink to="/about">About</NavLink>
     <NavLink to="/github">GitHub</NavLink>
   </NavMenu>
