@@ -26,3 +26,10 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Direnv stuff
+.direnv/
+
+# Nix stuff
+result
+result-*
