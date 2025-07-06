@@ -31,11 +31,14 @@ const keyboards: Record<KeyboardId, Keyboard> = loadKeyboards()
 // Compute matching combinations of devices and keyboard (by name)
 function matchDevicesAndKeyboards() {
   let groups: Array<{ name: string, devices: Array<HIDDevice>, keyboard: Keyboard | null }> = []
-  let productName = (device: HIDDevice) => device.productName
-  groupBy(devices.value, productName).forEach((devices, deviceName) => {
-    let keyboard = Object.values(keyboards).find(keyboard => keyboard.name === deviceName)
+  let getProductName = (device: HIDDevice) => device.productName
+  groupBy(devices.value, getProductName).forEach((devices, productName) => {
+    let keyboard = Object.values(keyboards).find(keyboard => {
+      return productName === keyboard.name
+          || productName === `${keyboard.manufacturer} ${keyboard.name}`
+    })
     groups.push({
-      name: deviceName,
+      name: productName,
       devices: devices,
       keyboard: keyboard ? keyboard : null
     })

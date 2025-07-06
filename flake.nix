@@ -24,7 +24,6 @@
           buildInputs = [
             pkgs.pnpm
             pkgs.nodejs
-            pkgs.chromium
           ];
         };
       }
