@@ -37,7 +37,7 @@ function canConnect() {
 function renderDeviceOption(index: number) {
   const device = props.devices[index]
   const { vendorId, productId, usage, usagePage } = WebHID.deviceUSBParams(device)
-  return `#${index} (vendorId: ${vendorId},productId: ${productId}, usage: ${usage}, usagePage: ${usagePage})`
+  return `#${index} (vendorId: ${vendorId}, productId: ${productId}, usage: ${usage}, usagePage: ${usagePage})`
 }
 
 function renderVariantOption(index: number) {
