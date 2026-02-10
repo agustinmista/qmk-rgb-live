@@ -27,6 +27,6 @@ export const router = createRouter({
         window.location.href = 'https://github.com/agustinmista/qmk-rgb-live'
         return '/redirecting'
       }
-    },
+    }
   ]
 })
