@@ -1,7 +1,5 @@
 <script setup lang="ts">
-defineEmits([
-  'color-picker-chosen'
-])
+defineEmits(['color-picker-chosen'])
 
 const defaultColors: Array<string> = [
   '#ffffff',
@@ -31,7 +29,7 @@ function colorOptionStyle(color: string) {
 
 function colorPickerStyle() {
   return {
-    width: 100 / (defaultColors.length + 1) + '%',
+    width: 100 / (defaultColors.length + 1) + '%'
   }
 }
 
@@ -44,10 +42,18 @@ function colorPickerValue(event: Event) {
 <template>
   <div class="color-palette" width="100%">
     <template v-for="color in defaultColors" :key="color">
-      <div class="color-option" :style="colorOptionStyle(color)" @click="$emit('color-picker-chosen', color)"></div>
+      <div
+        class="color-option"
+        :style="colorOptionStyle(color)"
+        @click="$emit('color-picker-chosen', color)"
+      ></div>
     </template>
-    <div class="color-option" :style="colorPickerStyle()" @change="$emit('color-picker-chosen', colorPickerValue($event))">
-      <input type="color">
+    <div
+      class="color-option"
+      :style="colorPickerStyle()"
+      @change="$emit('color-picker-chosen', colorPickerValue($event))"
+    >
+      <input type="color" />
     </div>
   </div>
 </template>
@@ -64,7 +70,7 @@ function colorPickerValue(event: Event) {
   transform: scale(1.1);
 }
 
-input[type=color] {
+input[type='color'] {
   padding: 10%;
   border-radius: 0;
   height: 100%;

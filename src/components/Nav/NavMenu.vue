@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  name: string,
-  logo: string,
+  name: string
+  logo: string
 }>()
 </script>
 
@@ -36,6 +36,6 @@ nav {
 }
 
 #logo {
-  padding: 0
+  padding: 0;
 }
 </style>

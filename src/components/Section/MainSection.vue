@@ -7,7 +7,7 @@ import { RouterView } from 'vue-router'
     <RouterView v-slot="{ Component }">
       <Transition mode="out-in">
         <Component :is="Component" />
-      </transition>
+      </Transition>
     </RouterView>
   </main>
 </template>

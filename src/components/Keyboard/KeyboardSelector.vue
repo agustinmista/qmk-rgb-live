@@ -8,9 +8,7 @@ import CardContainer from '@/components/Container/CardContainer.vue'
 import PlusIcon from '@/components/Icon/PlusIcon.vue'
 import PlusIconSmall from '@/components/Icon/PlusIconSmall.vue'
 
-const emit = defineEmits([
-  'keyboard-selector-connect'
-])
+const emit = defineEmits(['keyboard-selector-connect'])
 
 // Devices
 
@@ -30,12 +28,13 @@ const keyboards: Record<KeyboardId, Keyboard> = loadKeyboards()
 
 // Compute matching combinations of devices and keyboard (by name)
 function matchDevicesAndKeyboards() {
-  let groups: Array<{ name: string, devices: Array<HIDDevice>, keyboard: Keyboard | null }> = []
+  let groups: Array<{ name: string; devices: Array<HIDDevice>; keyboard: Keyboard | null }> = []
   let getProductName = (device: HIDDevice) => device.productName
   groupBy(devices.value, getProductName).forEach((devices, productName) => {
-    let keyboard = Object.values(keyboards).find(keyboard => {
-      return productName === keyboard.name
-          || productName === `${keyboard.manufacturer} ${keyboard.name}`
+    let keyboard = Object.values(keyboards).find((keyboard) => {
+      return (
+        productName === keyboard.name || productName === `${keyboard.manufacturer} ${keyboard.name}`
+      )
     })
     groups.push({
       name: productName,
@@ -65,7 +64,6 @@ async function forget(device: HIDDevice) {
 
 <template>
   <div class="keyboard-selector">
-
     <!-- Header -->
     <div class="button-grid">
       <div class="button-grid-header">
@@ -100,6 +98,6 @@ async function forget(device: HIDDevice) {
 
 <style scoped>
 span {
-  padding-left: 1em
+  padding-left: 1em;
 }
 </style>

@@ -2,12 +2,12 @@ const customConfigId: string = 'custom'
 const customConfigLocalStorageKey: string = `config_${customConfigId}`
 
 export function loadKeyboardConfigFromLocalStorage(): Keyboard | null {
-  let json = localStorage.getItem(customConfigLocalStorageKey) || ''
+  const json = localStorage.getItem(customConfigLocalStorageKey) || ''
   return validateKeyboardConfig(json)
 }
 
 export function saveKeyboardConfigToLocalStorage(config: Keyboard) {
-  let json = JSON.stringify(config)
+  const json = JSON.stringify(config)
   localStorage.setItem(customConfigLocalStorageKey, json)
 }
 
@@ -47,11 +47,11 @@ export function validateKeyboardConfig(config: string): Keyboard | null {
 }
 
 export function loadKeyboards(): Record<KeyboardId, Keyboard> {
-  let allKeyboardConfigs: Record<KeyboardId, Keyboard> = {}
+  const allKeyboardConfigs: Record<KeyboardId, Keyboard> = {}
 
   // Read the default JSON keyboard definitions
   console.log('Reading default keyboard configurations ...')
-  let defaultConfigs = import.meta.glob('@/assets/kbd/*.json', { eager: true }) as Record<string, { default: Keyboard }>
+  const defaultConfigs = import.meta.glob('@/assets/kbd/*.json', { eager: true }) as Record<string, { default: Keyboard }>
   for (const configPath in defaultConfigs) {
     const kbd = defaultConfigs[configPath].default
     allKeyboardConfigs[kbd.id] = kbd

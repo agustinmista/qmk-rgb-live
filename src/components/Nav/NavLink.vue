@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router'
 
 defineProps<{
-  to: string,
+  to: string
 }>()
 </script>
 

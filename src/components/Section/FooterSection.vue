@@ -1,8 +1,6 @@
 <template>
   <footer>
-    <small>
-      {{ new Date().getFullYear() }} Agustín Mista
-    </small>
+    <small> {{ new Date().getFullYear() }} Agustín Mista </small>
   </footer>
 </template>
 

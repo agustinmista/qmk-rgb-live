@@ -1,17 +1,15 @@
 <script setup lang="ts">
 const props = defineProps<{
-  index: Array<number>,
-  x: number,
-  y: number,
+  index: Array<number>
+  x: number
+  y: number
   w: number
-  h: number,
+  h: number
   selected: boolean
   color: HexColor | null
 }>()
 
-defineEmits([
-  'key-toggle'
-])
+defineEmits(['key-toggle'])
 
 function keyClasses() {
   return 'key' + (props.selected ? ' selected' : '')
@@ -19,10 +17,10 @@ function keyClasses() {
 
 function keyStyle() {
   return {
-    left: props.x+'%',
-    marginTop: props.y+'%',
-    width: props.w+'%',
-    paddingBottom: props.h+'%',
+    left: props.x + '%',
+    marginTop: props.y + '%',
+    width: props.w + '%',
+    paddingBottom: props.h + '%',
     backgroundColor: props.color ? props.color : 'var(--secondary)'
   }
 }
@@ -38,8 +36,7 @@ function keyTitle() {
     :style="keyStyle()"
     :title="keyTitle()"
     @click="$emit('key-toggle')"
-  >
-  </div>
+  ></div>
 </template>
 
 <style scoped>

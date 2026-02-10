@@ -14,9 +14,7 @@ const props = defineProps<{
   variant: VariantId
 }>()
 
-const emit = defineEmits([
-  'keyboard-controller-disconnect'
-])
+const emit = defineEmits(['keyboard-controller-disconnect'])
 
 // Disconnect
 
@@ -36,16 +34,16 @@ function toggle(index: KeyIndex) {
 
 function selectAll() {
   const layout = props.keyboard.variants[props.variant]
-  layout.forEach(key => {
+  layout.forEach((key) => {
     selectedKeys.value.add(key.index)
-  });
+  })
 }
 
 function invertAll() {
   const layout = props.keyboard.variants[props.variant]
-  layout.forEach(key => {
+  layout.forEach((key) => {
     toggle(key.index)
-  });
+  })
 }
 
 function clearAll() {
@@ -58,7 +56,7 @@ const colorMap: Ref<ColorMap> = ref(new Map())
 
 function colorChosen(color: HexColor) {
   // Update UI
-  selectedKeys.value.forEach(index => {
+  selectedKeys.value.forEach((index) => {
     const keyIndex = JSON.stringify(index)
     colorMap.value.set(keyIndex, color)
   })
@@ -71,13 +69,17 @@ function presetChosen(preset: ColorMap) {
   // Update UI
   colorMap.value.clear()
   const layout = props.keyboard.variants[props.variant]
-  layout.forEach(key => {
+  layout.forEach((key) => {
     let keyIndex = JSON.stringify(key.index)
     let color = preset.get(keyIndex)
     colorMap.value.set(keyIndex, color ? color : '#000000')
-  });
+  })
   // Update keyboard
-  const colors = groupProjectBy(Array.from(preset), tup => tup[1], tup => JSON.parse(tup[0]))
+  const colors = groupProjectBy(
+    Array.from(preset),
+    (tup) => tup[1],
+    (tup) => JSON.parse(tup[0])
+  )
   colors.forEach((keys, color) => {
     WebHID.remoteRGBSendSetColor(props.device, color, keys)
   })
@@ -105,12 +107,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyPress))
 
 <template>
   <div class="keyboard-controller">
-
     <!-- Header -->
     <div class="button-grid">
       <div class="button-grid-header">
-        <h3>Connected to: </h3>
-        <h5><i>{{ device.productName }}</i></h5>
+        <h3>Connected to:</h3>
+        <h5>
+          <i>{{ device.productName }}</i>
+        </h5>
       </div>
       <div class="button-grid-b3">
         <button class="red" @click="disconnect"><DisconnectIcon /></button>
@@ -119,7 +122,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyPress))
 
     <!-- The good stuff -->
     <CardContainer>
-
       <!-- Key area -->
       <KeyArea
         :layout="keyboard.variants[variant]"
@@ -132,9 +134,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyPress))
       />
 
       <!-- Color picker -->
-      <ColorPicker
-        @color-picker-chosen="colorChosen"
-      />
+      <ColorPicker @color-picker-chosen="colorChosen" />
 
       <!-- Preset selector -->
       <PresetSelector
@@ -142,13 +142,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyPress))
         :colors="colorMap"
         @preset-selector-load="presetChosen"
       />
-
     </CardContainer>
   </div>
 </template>
 
 <style scoped>
-h4 span{
+h4 span {
   display: inline-block;
 }
 </style>

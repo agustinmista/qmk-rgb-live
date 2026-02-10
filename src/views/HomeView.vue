@@ -40,7 +40,6 @@ async function disconnect() {
 
 // Make sure we disconnect the controller when me move to another page
 onUnmounted(disconnect)
-
 </script>
 
 <template>
@@ -49,10 +48,9 @@ onUnmounted(disconnect)
       <CardContainer v-if="!supported">
         <span>Your browser does not support WebHID!</span>
       </CardContainer>
-      <KeyboardSelector v-else-if="!connected"
-        @keyboard-selector-connect="connect"
-      />
-      <KeyboardController v-else
+      <KeyboardSelector v-else-if="!connected" @keyboard-selector-connect="connect" />
+      <KeyboardController
+        v-else
         :device="selectedDevice!"
         :keyboard="selectedKeyboard!"
         :variant="selectedVariant!"

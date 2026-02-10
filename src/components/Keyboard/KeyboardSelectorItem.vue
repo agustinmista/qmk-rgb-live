@@ -13,20 +13,19 @@ const props = defineProps<{
   keyboard: Keyboard | null
 }>()
 
-const emit = defineEmits([
-  'keyboard-selector-item-connect',
-  'keyboard-selector-item-forget'
-])
+const emit = defineEmits(['keyboard-selector-item-connect', 'keyboard-selector-item-forget'])
 
 type ArrayIndex = number
 
-function isNull(i: any | null) { return i === null }
+function isNull(i: any | null) {
+  return i === null
+}
 
 // The selected device interface
-let selectedDevice: Ref<ArrayIndex | null> = ref(null);
+let selectedDevice: Ref<ArrayIndex | null> = ref(null)
 
 // The selected variant
-var selectedVariant: Ref<VariantId | null> = ref(null);
+var selectedVariant: Ref<VariantId | null> = ref(null)
 
 // Helpers
 
@@ -52,11 +51,14 @@ function isDeviceSupported() {
 // Select the device indices that match all the USB parameters defined by this keyboard
 function pickMatchingDevices(filter: HIDDeviceFilter) {
   const checkParam = (filterParam: number | undefined, deviceParam: number | undefined) => {
-    if (!filterParam) { // Keyboard doesn't define param
+    if (!filterParam) {
+      // Keyboard doesn't define param
       return true
-    } else if (!deviceParam) { // Keybord defines param but device doesn't
+    } else if (!deviceParam) {
+      // Keybord defines param but device doesn't
       return false
-    } else { // Both device and keyboard define the param
+    } else {
+      // Both device and keyboard define the param
       return filterParam === deviceParam
     }
   }
@@ -80,34 +82,40 @@ function pickMatchingDevices(filter: HIDDeviceFilter) {
 // 1. Retrieving a saved value from the local storage if one exists
 // 3. For devices only, picking the one that matches all the usb parameters (if there's only one such device)
 function computeDefaultOptions() {
-
   // Unsupported devices don't have a keyboard attached
-  if (!props.keyboard) { return }
+  if (!props.keyboard) {
+    return
+  }
 
   // Load any saved config from the local storage
   const savedConfig = loadConfigFromLocalStorage()
   const savedDevice = savedConfig ? pickMatchingDevices(savedConfig.device) : []
 
   // Default device
-  if (props.devices.length === 1) { // Only one option
+  if (props.devices.length === 1) {
+    // Only one option
     console.log('Default device: only one')
     selectedDevice.value = 0
-  } else if (savedConfig && savedDevice.length === 1) { // There was an existing config and it matches an paired device
+  } else if (savedConfig && savedDevice.length === 1) {
+    // There was an existing config and it matches an paired device
     console.log('Default device: read from local storage')
     selectedDevice.value = savedDevice[0]
   } else {
     const matchingDevices = pickMatchingDevices(props.keyboard.usb)
-    if (matchingDevices.length === 1) { // There is exactly one device matching the usb parameters of the keyboard
+    if (matchingDevices.length === 1) {
+      // There is exactly one device matching the usb parameters of the keyboard
       console.log('Default device: using keyboard-defined one')
       selectedDevice.value = matchingDevices[0]
     }
   }
 
   // Default variant
-  if (props.keyboard && Object.keys(props.keyboard.variants).length === 1) { // Only one option
+  if (props.keyboard && Object.keys(props.keyboard.variants).length === 1) {
+    // Only one option
     console.log('Default variant: only one option')
     selectedVariant.value = Object.keys(props.keyboard!.variants)[0]
-  } else if (savedConfig) { // There was an existing config
+  } else if (savedConfig) {
+    // There was an existing config
     console.log('Default variant: read from local storage')
     selectedVariant.value = savedConfig.variant
   }
@@ -117,13 +125,13 @@ function computeDefaultOptions() {
 function handleConnectQueryParams() {
   let params = router.currentRoute.value.query
   if ('connect' in params) {
-    router.replace({'query': undefined})
-    if(
+    router.replace({ query: undefined })
+    if (
       !isNull(props.keyboard) &&
       !isNull(selectedDevice.value) &&
       !isNull(selectedVariant.value) &&
       props.keyboard!.id === params.connect
-      ) {
+    ) {
       console.log('Connecting automatically', props.keyboard!.id)
       connect(selectedDevice.value!, selectedVariant.value!)
     }
@@ -139,22 +147,14 @@ onMounted(() => {
 
 function connect(device: ArrayIndex, variant: VariantId) {
   if (!isNull(device) && !isNull(variant)) {
-    emit(
-      'keyboard-selector-item-connect',
-      props.devices[device!],
-      props.keyboard,
-      variant
-    )
+    emit('keyboard-selector-item-connect', props.devices[device!], props.keyboard, variant)
     saveConfigToLocalStorage()
   }
 }
 
 function forget(device: ArrayIndex) {
   if (!isNull(device)) {
-    emit(
-      'keyboard-selector-item-forget',
-      props.devices[device!]
-    )
+    emit('keyboard-selector-item-forget', props.devices[device!])
   }
 }
 
@@ -168,7 +168,7 @@ function toggleConfig() {
 // Local storage
 
 interface ItemConfig {
-  device: HIDDeviceFilter,
+  device: HIDDeviceFilter
   variant: VariantId
 }
 
@@ -193,7 +193,7 @@ function saveConfigToLocalStorage() {
 function loadConfigFromLocalStorage() {
   const key = `config_${props.keyboard!.id}`
   const value = localStorage.getItem(key)
-  const config = value ? JSON.parse(value) as ItemConfig : null
+  const config = value ? (JSON.parse(value) as ItemConfig) : null
   console.log('Read config data', { key, config })
   return config
 }
@@ -201,7 +201,6 @@ function loadConfigFromLocalStorage() {
 
 <template>
   <CardContainer>
-
     <!-- Header -->
     <div class="button-grid">
       <div class="button-grid-header">
@@ -212,12 +211,20 @@ function loadConfigFromLocalStorage() {
         <i>{{ keyboard ? keyboard.manufacturer : 'Unknown manufacturer' }}</i>
       </div>
       <div class="button-grid-b1">
-        <button class="green" @click="connect(selectedDevice!, selectedVariant!)" :disabled="!canConnect()">
+        <button
+          class="green"
+          @click="connect(selectedDevice!, selectedVariant!)"
+          :disabled="!canConnect()"
+        >
           <ConnectIcon />
         </button>
       </div>
       <div class="button-grid-b2">
-        <button :class="'secondary' + (configOpen ? ' outline' : '')" @click="toggleConfig" :disabled="!isDeviceSupported()">
+        <button
+          :class="'secondary' + (configOpen ? ' outline' : '')"
+          @click="toggleConfig"
+          :disabled="!isDeviceSupported()"
+        >
           <ConfigIcon />
         </button>
       </div>
@@ -257,6 +264,5 @@ function loadConfigFromLocalStorage() {
         </div>
       </div>
     </div>
-
   </CardContainer>
 </template>
